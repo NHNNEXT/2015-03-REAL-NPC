@@ -23,7 +23,7 @@
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
         }, {
-            low: 0
+            low: 0, width: '800px', height:'300px'
         });
 
         $http.get('http://localhost:3000/repos').success(function(data) {
@@ -81,7 +81,7 @@
                         // The value where the animation should start
                         from: 0,
                         // The value where it should end
-                        to: 1
+                        to: 0.5
                     }
                 });
             } else if(data.type === 'label' && data.axis === 'x') {
