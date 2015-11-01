@@ -7,32 +7,159 @@
 
     var app = angular.module('npcApp');
     app.controller('commitController', function($scope, $http) {
-        var owner = 'NHNNEXT';
-        var repo = '2015-03-REAL-NPC';
+        var self = this;
+        var labels = ['D-9', 'D-8', 'D-7', 'D-6', 'D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'today'];
+        var series = [];
+        var totalCommitCount = [];
+        /* totalCommitCount 배열 초기화 @TODO: 함수로 따로 구현하기 */
+        var range = 10;
+        for (var i = 0; i < range; i++) {
+            totalCommitCount[i] = 0;
+        }
 
-        $http.get('https://api.github.com/repos/' + owner + '/' + repo + '/commits')
-            .success(function(data) {
-                $scope.data = data;
-            });
-
-        // line chart
-        this.lineData = {
-            labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'test'],
+        var chart = new Chartist.Line('.ct-chart', {
+            labels: ['', '', '', '', '', '', '', '', '', ''],
             series: [
-                [0, 1, 2, 4, 7, 6, 9, 10, 8, 10, 14, 13, 16, 14, 17, 19, 20, 31, 32, 26, 36, 28, 31, 40, 26, 26, 43, 47, 55, 30],
-                [0, 1, 2, 4, 4, 6, 6, 13, 9, 10, 16, 18, 21, 16, 16, 16, 31, 17, 27, 23, 31, 29, 35, 39, 30, 32, 26, 43, 51, 46],
-                [0, 1, 3, 4, 6, 5, 11, 9, 11, 11, 13, 15, 14, 22, 20, 15, 31, 27, 25, 25, 36, 30, 37, 29, 29, 39, 40, 49, 34, 35],
-                [0, 1, 3, 5, 7, 5, 9, 9, 10, 17, 13, 21, 14, 16, 23, 23, 25, 17, 24, 34, 27, 39, 33, 45, 47, 32, 40, 36, 49, 32],
-                [0, 1, 3, 3, 7, 5, 8, 11, 12, 13, 16, 17, 20, 24, 27, 15, 22, 33, 35, 24, 32, 35, 41, 39, 24, 31, 51, 29, 45, 50]
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
-        };
+        }, {
+            low: 0
+        });
 
-        this.lineOptions = {
-            axisX: {
-                labelInterpolationFnc: function (value) {
-                    return value;
+        $http.get('http://localhost:3000/repos').success(function(data) {
+            data.forEach(function(repo) {
+                var repoCommitCount = [];
+                for (var i = 0; i < range; i++) {
+                    repoCommitCount[i] = 0;
                 }
+                // 오늘 날짜 구해서 파라미터로 넣기
+                $http.get('https://api.github.com/repos/' + repo.owner + '/' + repo.name + '/commits').success(function(commits) {
+                    commits.forEach(function(commit) {
+                        var dateWithTime = new Date(commit.commit.author.date);
+                        var date = new Date(dateWithTime.toLocaleDateString());
+                        var today = new Date(new Date().toLocaleDateString());
+                        var diffDate = (today - date) / 1000 / 60 / 60 / 24;
+
+                        if (diffDate < range) {
+                            totalCommitCount[diffDate]++;
+                            repoCommitCount[diffDate]++;
+                        }
+                    });
+                    series.push(repoCommitCount);
+
+                    chart.update({
+                        labels: labels,
+                        series: series
+                    });
+                });
+            });
+            series.push(totalCommitCount);
+        });
+
+        // Let's put a sequence number aside so we can use it in the event callbacks
+        var seq = 0,
+            delays = 40,
+            durations = 250;
+
+        // Once the chart is fully created we reset the sequence
+        chart.on('created', function() {
+            seq = 0;
+        });
+
+        // On each drawn element by Chartist we use the Chartist.Svg API to trigger SMIL animations
+        chart.on('draw', function(data) {
+            seq++;
+
+            if(data.type === 'line') {
+                // If the drawn element is a line we do a simple opacity fade in. This could also be achieved using CSS3 animations.
+                data.element.animate({
+                    opacity: {
+                        // The delay when we like to start the animation
+                        begin: seq * delays + 1000,
+                        // Duration of the animation
+                        dur: durations,
+                        // The value where the animation should start
+                        from: 0,
+                        // The value where it should end
+                        to: 1
+                    }
+                });
+            } else if(data.type === 'label' && data.axis === 'x') {
+                data.element.animate({
+                    y: {
+                        begin: seq * delays,
+                        dur: durations,
+                        from: data.y + 100,
+                        to: data.y,
+                        // We can specify an easing function from Chartist.Svg.Easing
+                        easing: 'easeOutQuart'
+                    }
+                });
+            } else if(data.type === 'label' && data.axis === 'y') {
+                data.element.animate({
+                    x: {
+                        begin: seq * delays,
+                        dur: durations,
+                        from: data.x - 100,
+                        to: data.x,
+                        easing: 'easeOutQuart'
+                    }
+                });
+            } else if(data.type === 'point') {
+                data.element.animate({
+                    x1: {
+                        begin: seq * delays,
+                        dur: durations,
+                        from: data.x - 10,
+                        to: data.x,
+                        easing: 'easeOutQuart'
+                    },
+                    x2: {
+                        begin: seq * delays,
+                        dur: durations,
+                        from: data.x - 10,
+                        to: data.x,
+                        easing: 'easeOutQuart'
+                    },
+                    opacity: {
+                        begin: seq * delays,
+                        dur: durations,
+                        from: 0,
+                        to: 1,
+                        easing: 'easeOutQuart'
+                    }
+                });
+            } else if(data.type === 'grid') {
+                // Using data.axis we get x or y which we can use to construct our animation definition objects
+                var pos1Animation = {
+                    begin: seq * delays,
+                    dur: durations,
+                    from: data[data.axis.units.pos + '1'] - 30,
+                    to: data[data.axis.units.pos + '1'],
+                    easing: 'easeOutQuart'
+                };
+
+                var pos2Animation = {
+                    begin: seq * delays,
+                    dur: durations,
+                    from: data[data.axis.units.pos + '2'] - 100,
+                    to: data[data.axis.units.pos + '2'],
+                    easing: 'easeOutQuart'
+                };
+
+                var animations = {};
+                animations[data.axis.units.pos + '1'] = pos1Animation;
+                animations[data.axis.units.pos + '2'] = pos2Animation;
+                animations['opacity'] = {
+                    begin: seq * delays,
+                    dur: durations,
+                    from: 0,
+                    to: 1,
+                    easing: 'easeOutQuart'
+                };
+
+                data.element.animate(animations);
             }
-        };
+        });
     });
 })(angular);

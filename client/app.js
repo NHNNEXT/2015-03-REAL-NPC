@@ -4,7 +4,7 @@
 (function(angular) {
     'use strict';
 
-    var app = angular.module('npcApp', ['ngRoute', 'angular-chartist']);
+    var app = angular.module('npcApp', ['ngRoute']);
 
     app.config(function($routeProvider) {
         $routeProvider
