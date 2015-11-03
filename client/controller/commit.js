@@ -17,7 +17,7 @@
             totalCommitCount[i] = 0;
         }
 
-        var chart = new Chartist.Line('.ct-chart', {
+        var chart = new Chartist.Line('.ct-chart-commit', {
             labels: ['', '', '', '', '', '', '', '', '', ''],
             series: [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

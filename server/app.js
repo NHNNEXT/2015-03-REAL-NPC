@@ -23,6 +23,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../client')));
 
+//client에 index.html이 없으면 밑의 곳에서 찾는다..
+//static경로에 없는 것들은 아래 곳에서 찾는다...
 app.use('/', routes);
 
 // catch 404 and forward to error handler

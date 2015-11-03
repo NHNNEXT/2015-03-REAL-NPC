@@ -6,6 +6,7 @@
 
     var app = angular.module('npcApp', ['ngRoute']);
 
+    //route등록하는 config
     app.config(function($routeProvider) {
         $routeProvider
         .when('/', {
