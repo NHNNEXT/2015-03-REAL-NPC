@@ -4,8 +4,9 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var routes = require('./routes/index');
 var mongoose = require('mongoose');
+var routes = require('./routes/index');
+var update = require('./update');
 
 mongoose.connect('mongodb://localhost/npc');
 
@@ -58,5 +59,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+// set interval
+setInterval(update, 6000);
 
 module.exports = app;

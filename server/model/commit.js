@@ -14,7 +14,9 @@ var commitSchema = new Schema({
     url: String,
     commentCount: Number,
     repoName: String,
-    owner: String
+    owner: String,
+    addition: Number,
+    deletion: Number
 });
 
 module.exports = mongoose.model('commit', commitSchema);
