@@ -45,6 +45,7 @@ function fetchCommit(sha, owner, name) {
                     sha: sha,
                     owner: owner,
                     repoName: name,
+                    date: commit.commit.author.date,
                     addition: commit.stats.additions,
                     deletion: commit.stats.deletions,
                     name: commit.author.login
