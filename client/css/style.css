@@ -1,9 +1,13 @@
 body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: white;
   background-color: #292929;
 }
 
+#commitTimeLegend {
+  display: inline-block;
+}
 #commitTimeLegend li span {
   width: 1em;
   height: 1em;
@@ -25,15 +29,12 @@ a {
   shape-rendering: crispEdges;
 }
 
-.day {
-  fill: #fff;
-  stroke: #ccc;
+.year {
+  text-anchor: middle;
 }
 
-.month {
-  fill: none;
-  stroke: #000;
-  stroke-width: 2px;
+.day {
+  stroke: #ccc;
 }
 
 .RdYlGn .q0-11{fill:rgb(255,255,255)}

@@ -35,7 +35,7 @@ router.get('/contributions', function(req, res) {
     var today = new Date();
 
     for (var i = 0; i < 365; ++i) {
-        var date = new Date(today.getFullYear(), today.getMonth(), -i);
+        var date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
         data[date.toISOString().split('T')[0]] = 0;
     }
 

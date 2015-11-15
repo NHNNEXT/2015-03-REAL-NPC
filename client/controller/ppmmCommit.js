@@ -62,9 +62,7 @@
 
         $http.get('http://localhost:3000/commits').success(function(data) {
             data.forEach(function(commit) {
-                console.log("commit.name: ", commit.name);
                 var recover = recoverMap[commit.name];
-                console.log("recover: ", recover);
                 var index;
                 switch (recover) {
                     case "2-3":
@@ -139,9 +137,6 @@
             for (var c = 0; c < ppmmCount.length; c++) {
                 ppmmCount[c].fill = colorset[c];
             }
-
-            console.log(ppmmCount);
-
         });
         // ng-repeat를 이용하여 template에 구현
         $scope.ppmmCounts = ppmmCount;

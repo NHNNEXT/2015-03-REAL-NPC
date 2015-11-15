@@ -10,9 +10,9 @@
         var today = new Date(2015, 10, 5),
             startDate = new Date(2015, 5, 1);
 
-        var width = 960,
-            height = 136,
-            cellSize = 11; // cell size
+        var width = 360,
+            height = 360,
+            cellSize = 13; // cell size
 
         var percent = d3.format(".1%"),
             format = d3.time.format("%Y-%m-%d");
@@ -26,11 +26,12 @@
             .attr("height", height)
             .attr("class", "RdYlGn")
             .append("g")
-            .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
+            .attr("transform", "translate(50, 0)");
 
         svg.append("text")
             .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
-            .style("text-anchor", "middle")
+            .attr("fill", "white")
+            .attr("class", "year")
             .text(2015);
 
         var rect = svg.selectAll(".day")
@@ -69,7 +70,5 @@
         //        + "H" + (w1 + 1) * cellSize + "V" + 0
         //        + "H" + (w0 + 1) * cellSize + "Z";
         //}
-
-        d3.select(self.frameElement).style("height", "2910px");
     });
 })(angular);
