@@ -4,7 +4,6 @@
 
 (function(angular) {
     'use strict';
-
     var app = angular.module('npcApp');
     app.controller('commitTimeController', function($scope, $http) {
         var chartData = [
@@ -72,7 +71,6 @@
                     if (--finishCount == 0) {
                         var chart = new Chart(ctx).Doughnut(series);
                         document.getElementById('commitTimeLegend').innerHTML = chart.generateLegend();
-
                     }
                 });
             });
