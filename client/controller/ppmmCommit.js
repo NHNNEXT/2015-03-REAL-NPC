@@ -131,7 +131,7 @@
             }
 
             // 원색 color
-            var colorset = ["#FDB45C","#F7464A","#31C0FF","blue","purple","green"];
+            var colorset = ["#FDB45C","#F7464A","skyblue","blue","purple","green"];
             // blue계열 color
             //var colorset = ["#31C0FF", "#68CDFF", "#2CACE5", "#4E9ABF", "#64BFE5", "#386A7F"]
             for (var c = 0; c < ppmmCount.length; c++) {

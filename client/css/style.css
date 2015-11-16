@@ -21,6 +21,7 @@ body {
 
 #ppmmCommitLegend {
   display: inline-block;
+  padding: 25px;
 }
 
 a {
@@ -39,6 +40,16 @@ a {
 
 .day {
   stroke: #ccc;
+}
+.dash-tile {
+  margin-top: 20px;
+  padding: 30px;
+  opacity: 0.7;
+  background-color: #333;
+  border-radius: 5%;
+}
+.dash-tile:hover {
+  opacity: 1;
 }
 
 .RdYlGn .q0-11{fill:rgb(255,255,255)}

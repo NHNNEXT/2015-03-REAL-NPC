@@ -4,8 +4,9 @@
         <rect width="100%" height="100%" fill="#31C0FF" />
         <rect ng-repeat = "ppmmCount in ppmmCounts" x = {{ppmmCount.x}}% y = {{ppmmCount.y}}% height = {{ppmmCount.height}}% width = {{ppmmCount.width}}% fill = {{ppmmCount.fill}} />
     </svg>
-    <div id="ppmmCommitLegend">
-        <div ng-repeat = "ppmmCount in ppmmCounts"" style = "color: {{ppmmCount.fill}}" >
+    <div id="ppmmCommitLegend" class="ppmmCommitLegend">
+        <div ng-repeat = "ppmmCount in ppmmCounts" style = "color: white" >
+            <div style = "background-color: {{ppmmCount.fill}};width:15px;height:15px;display: inline-block;"></div>
             {{ppmmCount.recover}} : {{ppmmCount.percent | number}} %
         </div>
     </div>

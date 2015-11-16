@@ -10,9 +10,9 @@
         var today = new Date(2015, 10, 5),
             startDate = new Date(2015, 5, 1);
 
-        var width = 360,
-            height = 360,
-            cellSize = 13; // cell size
+        var width = 400,
+            height = 200,
+            cellSize = 16; // cell size
 
         var percent = d3.format(".1%"),
             format = d3.time.format("%Y-%m-%d");
@@ -26,7 +26,7 @@
             .attr("height", height)
             .attr("class", "RdYlGn")
             .append("g")
-            .attr("transform", "translate(50, 0)");
+            .attr("transform", "translate(15, 40)");
 
         svg.append("text")
             .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
