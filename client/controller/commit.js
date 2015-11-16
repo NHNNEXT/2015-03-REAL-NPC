@@ -23,7 +23,7 @@
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
         }, {
-            low: 0, height:'300px'
+            low: 0, height:'200px'
         });
 
         $http.get('http://localhost:3000/repos').success(function(data) {

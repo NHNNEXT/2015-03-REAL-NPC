@@ -19,6 +19,10 @@ body {
   list-style: none;
 }
 
+#ppmmCommitLegend {
+  display: inline-block;
+}
+
 a {
   color: #00B7FF;
 }
