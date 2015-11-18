@@ -17,8 +17,7 @@
             height = 200,
             cellSize = width / (PERIOD_MONTH * 4 + 1) - 2; // cell size
 
-        var percent = d3.format(".1%"),
-            format = d3.time.format("%Y-%m-%d");
+        var format = d3.time.format("%Y-%m-%d");
 
         var color = d3.scale.quantize()
             .domain([0, 10])
@@ -54,7 +53,7 @@
             rect.filter(function(d) { return d in data; })
                 .attr("class", function(d) { return "day " + color(data[d]); })
                 .select("title")
-                .text(function(d) { return d + ": " + percent(data[d]); });
+                .text(function(d) { return d + ": " + data[d] + " commits"; });
         });
     });
 })(angular);
