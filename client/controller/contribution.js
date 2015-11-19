@@ -7,15 +7,17 @@
 
     var app = angular.module('npcApp');
     app.controller('contributionController', function($scope, $http) {
-        var today = new Date(2015, 10, 5),
-            startDate = new Date(2015, 5, 1);
+        var PERIOD_MONTH = 6;
+
+        var today = new Date(),
+            tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
+            startDate = new Date(today.getFullYear(), today.getMonth() - PERIOD_MONTH, today.getDate());
 
         var width = 400,
             height = 200,
-            cellSize = 16; // cell size
+            cellSize = width / (PERIOD_MONTH * 4 + 1) - 2; // cell size
 
-        var percent = d3.format(".1%"),
-            format = d3.time.format("%Y-%m-%d");
+        var format = d3.time.format("%Y-%m-%d");
 
         var color = d3.scale.quantize()
             .domain([0, 10])
@@ -35,7 +37,7 @@
             .text(2015);
 
         var rect = svg.selectAll(".day")
-            .data(d3.time.days(startDate, today))
+            .data(d3.time.days(startDate, tomorrow))
             .enter().append("rect")
             .attr("class", "day")
             .attr("width", cellSize)
@@ -47,28 +49,11 @@
         rect.append("title")
             .text(function(d) { return d; });
 
-        //svg.selectAll(".month")
-        //    .data(d3.time.months(startDate, today))
-        //    .enter().append("path")
-        //    .attr("class", "month")
-        //    .attr("d", monthPath);
-
         $http.get('http://localhost:3000/contributions').success(function(data) {
             rect.filter(function(d) { return d in data; })
                 .attr("class", function(d) { return "day " + color(data[d]); })
                 .select("title")
-                .text(function(d) { return d + ": " + percent(data[d]); });
+                .text(function(d) { return d + ": " + data[d] + " commits"; });
         });
-
-        //function monthPath(t0) {
-        //    var t1 = t0.getMonth() < new Date().getMonth() ? new Date(t0.getFullYear(), t0.getMonth() + 1, 0) : new Date(),
-        //        d0 = t0.getDay(), w0 = d3.time.weekOfYear(t0) - d3.time.weekOfYear(startDate),
-        //        d1 = t1.getDay(), w1 = d3.time.weekOfYear(t1) - d3.time.weekOfYear(startDate);
-        //    return "M" + (w0 + 1) * cellSize + "," + d0 * cellSize
-        //        + "H" + w0 * cellSize + "V" + 7 * cellSize
-        //        + "H" + w1 * cellSize + "V" + (d1 + 1) * cellSize
-        //        + "H" + (w1 + 1) * cellSize + "V" + 0
-        //        + "H" + (w0 + 1) * cellSize + "Z";
-        //}
     });
 })(angular);

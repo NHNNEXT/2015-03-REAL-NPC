@@ -31,17 +31,31 @@ router.get('/commits', function(req, res) {
 });
 
 router.get('/contributions', function(req, res) {
-    var data = {};
-    var today = new Date();
+    var PERIOD_MONTH = 6;
 
-    for (var i = 0; i < 365; ++i) {
+    function getLocalDateString(date) {
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        return year +
+            ((month < 10) ? '-0' : '-') + month +
+            ((day < 10) ? '-0' : '-') + day;
+    }
+
+    var today = new Date(),
+        tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
+        startDate = new Date(today.getFullYear(), today.getMonth() - PERIOD_MONTH, today.getDate());
+
+    var data = {};
+
+    for (var i = 0; i < (PERIOD_MONTH * 31); ++i) {
         var date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
-        data[date.toISOString().split('T')[0]] = 0;
+        data[getLocalDateString(date)] = 0;
     }
 
     Commit.find(function(err, commits) {
         commits.forEach(function(commit) {
-            var commitDate = new Date(commit.date).toISOString().split('T')[0];
+            var commitDate = getLocalDateString(new Date(commit.date));
             if (commitDate in data) {
                 data[commitDate]++;
             }
