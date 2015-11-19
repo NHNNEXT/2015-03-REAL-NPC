@@ -44,7 +44,7 @@ a {
 .dash-tile {
   margin-top: 20px;
   padding: 30px;
-  opacity: 0.7;
+  opacity: 0.75;
   background-color: #333;
   border-radius: 5%;
 }
@@ -52,7 +52,15 @@ a {
   opacity: 1;
 }
 
-.RdYlGn .q0-11{fill:rgb(255,255,255)}
+.ct-series-e .ct-bar,.ct-series-e .ct-line,.ct-series-e .ct-point,.ct-series-e .ct-slice-donut {
+  stroke: skyblue;
+}
+
+.ct-series-e .ct-area,.ct-series-e .ct-slice-pie {
+  fill: skyblue;
+}
+
+.RdYlGn .q0-11{fill:#333}
 .RdYlGn .q1-11{fill:rgb(236,247,197)}
 .RdYlGn .q2-11{fill:rgb(217,239,139)}
 .RdYlGn .q3-11{fill:rgb(191,228,122)}
