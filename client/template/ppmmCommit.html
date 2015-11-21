@@ -2,12 +2,17 @@
     <h2>Commit Lines</h2>
     <svg baseProfile="full" xmlns="http://www.w3.org/2000/svg" width="200px" height="200px">
         <rect width="100%" height="100%" fill="#31C0FF" />
-        <rect ng-repeat = "ppmmCount in ppmmCounts" x = {{ppmmCount.x}}% y = {{ppmmCount.y}}% height = {{ppmmCount.height}}% width = {{ppmmCount.width}}% fill = {{ppmmCount.fill}} />
+        <rect ng-repeat = "group in chartData"
+              ng-attr-x="{{group.x | percent}}" ng-attr-y="{{group.y | percent}}"
+              ng-attr-height="{{group.height | percent}}" ng-attr-width="{{group.width | percent}}"
+              ng-attr-class="{{group.className}}">
+            <title>{{group.name}} : {{group.lines | number}}</title>
+        </rect>
     </svg>
     <div id="ppmmCommitLegend" class="ppmmCommitLegend">
-        <div ng-repeat = "ppmmCount in ppmmCounts" style = "color: white" >
-            <div style = "background-color: {{ppmmCount.fill}};width:15px;height:15px;display: inline-block;"></div>
-            {{ppmmCount.recover}} : {{ppmmCount.percent | number}} %
+        <div ng-repeat = "group in chartData" data-toggle="tooltip" title="{{group.name}} : {{group.lines | number}}">
+            <div ng-attr-class="{{group.className}}"></div>
+            {{group.name}} : {{group.ratio | percent}}
         </div>
     </div>
 

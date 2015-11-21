@@ -5,6 +5,40 @@ body {
   background-color: #292929;
 }
 
+.tooltip {
+  display: inline;
+  position: relative;
+}
+
+.tooltip:hover:after {
+  background: #111;
+  background: rgba(0,0,0,.8);
+  border-radius: .5em;
+  bottom: 1.35em;
+  color: #fff;
+  content: attr(title);
+  display: block;
+  left: 1em;
+  padding: .3em 1em;
+  position: absolute;
+  text-shadow: 0 1px 0 #000;
+  white-space: nowrap;
+  z-index: 98;
+}
+
+.tooltip:hover:before {
+  border: solid;
+  border-color: #111 transparent;
+  border-color: rgba(0,0,0,.8) transparent;
+  border-width: .4em .4em 0 .4em;
+  bottom: 1em;
+  content: "";
+  display: block;
+  left: 2em;
+  position: absolute;
+  z-index: 99;
+}
+
 #commitTimeLegend {
   display: inline-block;
 }
@@ -19,9 +53,24 @@ body {
   list-style: none;
 }
 
+/* ppmmCommit */
+.ppmmCommit .series-0 {fill:#FDB45C; background-color:#FDB45C;}
+.ppmmCommit .series-1 {fill:#F7464A; background-color:#F7464A;}
+.ppmmCommit .series-2 {fill:skyblue; background-color:skyblue;}
+.ppmmCommit .series-3 {fill:blue; background-color:blue;}
+.ppmmCommit .series-4 {fill:purple; background-color:purple;}
+.ppmmCommit .series-5 {fill:green; background-color:green;}
+
 #ppmmCommitLegend {
   display: inline-block;
+  color: white;
   padding: 25px;
+}
+
+#ppmmCommitLegend .series {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
 }
 
 a {
