@@ -9,7 +9,7 @@ var commitSchema = new Schema({
     sha: String,
     name: String,
     email: String,
-    date: String,
+    date: Date,
     message: String,
     url: String,
     commentCount: Number,
