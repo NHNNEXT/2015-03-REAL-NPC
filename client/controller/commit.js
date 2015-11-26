@@ -1,5 +1,5 @@
 /**
- * Created by jwlee on 2015. 10. 23..
+ * Created by jwlee on 2015. 10. 23.
  */
 
 (function(angular) {
