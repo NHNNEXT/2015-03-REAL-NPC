@@ -1,8 +1,11 @@
 <div class = "dash-tile ppmmCommit">
     <h2>Commit Lines</h2>
+    <div class="rangeOption">
+        <span ng-repeat="range in rangeOptions" ng-click="makeChart(range)" ng-class="{selected:isSelected(range)}">{{ range.title }}</span>
+    </div>
     <svg baseProfile="full" xmlns="http://www.w3.org/2000/svg" width="200px" height="200px">
         <rect width="100%" height="100%" fill="#31C0FF" />
-        <rect ng-repeat = "group in chartData"
+        <rect ng-repeat="group in chartData"
               ng-attr-x="{{group.x | percent}}" ng-attr-y="{{group.y | percent}}"
               ng-attr-height="{{group.height | percent}}" ng-attr-width="{{group.width | percent}}"
               ng-attr-class="{{group.className}}">

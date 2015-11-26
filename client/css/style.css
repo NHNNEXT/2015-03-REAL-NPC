@@ -39,6 +39,27 @@ body {
   z-index: 99;
 }
 
+.rangeOption {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+.rangeOption span {
+  opacity: 0.5;
+  font-size: 9pt;
+  padding: 0 .5em;
+  color: #00B7FF;
+}
+
+.rangeOption span.selected {
+  color: white;
+}
+
+.rangeOption span:hover {
+  opacity: 1;
+}
+
 #commitTimeLegend {
   display: inline-block;
 }

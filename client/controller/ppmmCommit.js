@@ -2,17 +2,24 @@
  * Created by Ellen on 2015. 11. 8..
  */
 
-function getLocalDateString(date) {
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    var day = date.getDate();
-    return year +
-        ((month < 10) ? '-0' : '-') + month +
-        ((day < 10) ? '-0' : '-') + day;
-}
-
 (function(angular) {
     'use strict';
+
+    function getLocalDateString(date) {
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        return year +
+            ((month < 10) ? '-0' : '-') + month +
+            ((day < 10) ? '-0' : '-') + day;
+    }
+
+    var rangeOptions = [
+        { title: "1 week", days: 7 },
+        { title: "1 month", months: 1 },
+        { title: "3 months", months: 3 },
+        { title: "6 months", months: 6 }
+    ];
 
     var app = angular.module('npcApp');
     app.filter('percent', function() {
@@ -38,61 +45,76 @@ function getLocalDateString(date) {
         var members = recoverMap;
 
         var today = new Date();
-        var startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
-        var since = 'since=' + getLocalDateString(startDate);
-        $http.get('http://localhost:3000/commits?' + since).success(function(data) {
-            var totalLine = 0;
-            var chartData = groups.map(function(name) {
-                return {
-                    'name': name,
-                    'lines': 0
-                };
+        function makeChart(range) {
+            var startDate = new Date(
+                today.getFullYear() - (range.years || 0),
+                today.getMonth() - (range.months || 0),
+                today.getDate() - (range.days || 0)
+            );
+            var since = 'since=' + getLocalDateString(startDate);
+
+            $http.get('http://localhost:3000/commits?' + since).success(function(data) {
+                var totalLine = 0;
+                var chartData = groups.map(function(name) {
+                    return {
+                        'name': name,
+                        'lines': 0
+                    };
+                });
+
+                // Count all addition from data
+                var additions = {};
+                data.forEach(function(commit) {
+                    var group = members[commit.name] || 'else';
+                    additions[group] = additions[group] || 0;
+                    additions[group] += commit.addition;
+                });
+
+                // Update groups by chartData
+                chartData.forEach(function(group) {
+                    group.lines = additions[group.name] || 0;
+                    totalLine += group.lines;
+                    return group;
+                });
+
+                // Sort groups by chartData
+                chartData.sort(function(a, b) {
+                    return b.lines - a.lines;
+                });
+
+                chartData.forEach(function(data, index) {
+                    data.ratio = data.lines / totalLine;
+                    data.className = 'series series-' + index;
+                });
+
+                // Calculate width and height
+                // 1st group (left side)
+                chartData[0].x      = 0;
+                chartData[0].y      = 0;
+                chartData[0].width  = chartData[0].lines / totalLine;
+                chartData[0].height = 1;
+
+                // other groups (right side)
+                var lines = 0;
+                var rightTotal = totalLine - chartData[0].lines;
+                for (var index = 1; index < chartData.length; index++) {
+                    chartData[index].x = chartData[0].width;
+                    chartData[index].y = lines / rightTotal;
+                    chartData[index].width = 1 - chartData[0].width;
+                    chartData[index].height = chartData[index].lines / rightTotal;
+                    lines += chartData[index].lines;
+                }
+
+                $scope.range = range;
+                $scope.chartData = chartData;
             });
+        }
 
-            // Count all addition from data
-            var additions = {};
-            data.forEach(function(commit) {
-                var group = members[commit.name] || 'else';
-                additions[group] = additions[group] || 0;
-                additions[group] += commit.addition;
-            });
-
-            // Update groups by chartData
-            chartData.forEach(function(group) {
-                group.lines = additions[group.name] || 0;
-                totalLine += group.lines;
-                return group;
-            });
-
-            // Sort groups by chartData
-            chartData.sort(function(a, b) {
-                return b.lines - a.lines;
-            });
-
-            chartData.forEach(function(data, index) {
-                data.ratio = data.lines / totalLine;
-                data.className = 'series series-' + index;
-            });
-
-            // Calculate width and height
-            // 1st group (left side)
-            chartData[0].x      = 0;
-            chartData[0].y      = 0;
-            chartData[0].width  = chartData[0].lines / totalLine;
-            chartData[0].height = 1;
-
-            // other groups (right side)
-            var lines = 0;
-            var rightTotal = totalLine - chartData[0].lines;
-            for (var index = 1; index < chartData.length; index++) {
-                chartData[index].x      = chartData[0].width;
-                chartData[index].y      = lines / rightTotal;
-                chartData[index].width  = 1 - chartData[0].width;
-                chartData[index].height = chartData[index].lines / rightTotal;
-                lines += chartData[index].lines;
-            }
-
-            $scope.chartData = chartData;
-        });
+        $scope.makeChart = makeChart;
+        $scope.rangeOptions = rangeOptions;
+        $scope.isSelected = function(range) {
+            return range == $scope.range;
+        };
+        makeChart(rangeOptions[0]);
     });
 })(angular);
