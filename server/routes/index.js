@@ -21,9 +21,31 @@ router.get('/repos', function(req, res) {
     });
 });
 
-/* GET commits */
+/**
+ * Get commits
+ * Parameters:
+ *  since   string  Only commits from this date will be returned. 'YYYY-MM-DD' format.
+ *  until   string  Only commits until this date will be returned. 'YYYY-MM-DD' format.
+ */
 router.get('/commits', function(req, res) {
-    Commit.find(function(err, commits) {
+    var query = {};
+    var since = req.query.since;
+    var until = req.query.until;
+
+    // new Date() with 'YYYY-MM-DD' returns ISO date (not Local time),
+    // so we use 'YYYY/MM/DD' format.
+    if (since) {
+        var firstDay = new Date(since.replace('-', '/'));
+        query.date = query.date || {};
+        query.date.$gte = firstDay;
+    }
+    if (until) {
+        var lastDay = new Date(until.replace('-', '/'));
+        query.date = query.date || {};
+        query.date.$lte = new Date(lastDay.getFullYear(), lastDay.getMonth(), lastDay.getDate() + 1);
+    }
+
+    Commit.find(query, function(err, commits) {
         if (err) {
             return res.status(500).send(err);
         }
@@ -56,7 +78,7 @@ router.get('/contributions', function(req, res) {
 
     Commit.find(function(err, commits) {
         commits.forEach(function(commit) {
-            var commitDate = getLocalDateString(new Date(commit.date));
+            var commitDate = getLocalDateString(commit.date);
             if (commitDate in data) {
                 data[commitDate]++;
             }
