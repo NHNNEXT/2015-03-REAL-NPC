@@ -2,66 +2,117 @@
  * Created by yeslkoh on 2015. 11. 12..
  */
 
-(function(angular) {
+(function (angular) {
     'use strict';
 
     var app = angular.module('npcApp');
-    app.controller('langController', function($scope, $http) {
-        var chartData = [
-            {
-                color: "#FDB45C",
-                highlight: "#FFC870",
-                label: "C"
-            },
-            {
-                color:"#F7464A",
-                highlight: "#FF5A5E",
-                label: "C++"
-            },
-            {
-                color: "#46BFBD",
-                highlight: "#5AD3D1",
-                label: "JavaScript"
-            },
-            {
-                color: "blue",
-                highlight: "lightblue",
-                label: "Java"
-            },
-            {
-                color: "purple",
-                highlight: "lightpurple",
-                label: "Python"
-            }
-        ];
+    app.controller('langController', function ($scope, $http) {
+        var results=[[], [], [], [], [], [], []];
+        var langIndexMap = {
+            'C': 0,
+            'C++': 0,
+            'Java': 1,
+            'JavaScript': 2,
+            'Objective-C': 3,
+            'Python': 4,
+            'HTML': 5,
+            'CSS': 5,
+            'other': 6
+        }
 
-        //var langCount = [];
-        //var range = 5;
-        //for (var i = 0; i < range; i++) {
-        //    lang[i] = 0;
-        //}
-        //var finishCount = 0;
+        $http.get('http://localhost:3000/lang').success(function (data) {
+            data.forEach(function (teamData, teamIndex) {
+                var langCount = [0, 0, 0, 0, 0, 0, 0];
+                for (var language in teamData.languages) {
+                    var langIndex;
 
-        var ctx = document.querySelector('#commit-language').getContext("2d");
+                    if (language in langIndexMap) {
+                        langIndex = langIndexMap[language];
+                    } else {
+                        langIndex = langIndexMap['other'];
+                    }
 
-        $http.get('http://localhost:3000/repos').success(function(data){
-            var usedLangs = [];
-            data.forEach(function(repo){
-                $http.get('https://api.github.com/repos/'+ repo.owner + '/' + repo.name + '/languages').success(function(data) {
-                    //각 obj의 key값을 가져와서 랭귀지로.
-                    console.log(Object.keys(data));
-                    //usedLangs.push(Object.keys(data));
-                    usedLangs.push(Object.keys(data));
+                    langCount[langIndex] += teamData.languages[language];
+                }
 
-                    //이 key값들 하나씩만 있는 하나의 배열로..
-                    //같은 키값을 가지고 있으면 벨류들을 다 더하기.
-                    //키 값을 차트의 레이블로 넣는다.
-
-                    //--> 우선 랭귀지 받아온 것을 우리 서버에 저장을 하고, 후 여기서 꺼내는 방식으로.
-                        });
-                console.log(usedLangs);
-
+                langCount.forEach(function (count, langIndex) {
+                    var langObj = {'x': teamIndex, 'y': count};
+                    results[langIndex].push(langObj);
                 });
+            });
+
+            var n = 7, // number of layers
+                m = 4, // number of samples per layer
+                stack = d3.layout.stack(),
+                layers = stack(results),
+                yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
+                yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+
+            var margin = {top: 40, right: 10, bottom: 20, left: 10},
+                width = 300 - margin.left - margin.right,
+                height = 200 - margin.top - margin.bottom;
+
+            var x = d3.scale.ordinal()
+                .domain(d3.range(m))
+                .rangeRoundBands([0, width], .08);
+
+            var y = d3.scale.linear()
+                .domain([0, yStackMax])
+                .range([height, 0]);
+
+            var color = d3.scale.linear()
+                .domain([0, n - 1])
+                .range(["#aad", "#556"]);
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .tickSize(0)
+                .tickPadding(6)
+                .orient("bottom");
+
+            var svg = d3.select("#commit-language").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var layer = svg.selectAll(".layer")
+                .data(layers)
+                .enter().append("g")
+                .attr("class", "layer")
+                .style("fill", function(d, i) { return color(i); });
+
+            var rect = layer.selectAll("rect")
+                .data(function(d) { return d; })
+                .enter().append("rect")
+                .attr("x", function(d) { return x(d.x); })
+                .attr("y", height)
+                .attr("width", x.rangeBand())
+                .attr("height", 0);
+
+            rect.transition()
+                .delay(function(d, i) { return i * 10; })
+                .attr("y", function(d) { return y(d.y0 + d.y); })
+                .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            function transitionStacked() {
+                y.domain([0, yStackMax]);
+
+                rect.transition()
+                    // .duration(500)
+                    // .delay(function(d, i) { return i * 10; })
+                    .attr("y", function(d) { return y(d.y0 + d.y); })
+                    .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+                    .transition()
+                    .attr("x", function(d) { return x(d.x); })
+                    .attr("width", x.rangeBand());
+            }
+
         });
     });
 })(angular);

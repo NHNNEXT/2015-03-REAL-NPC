@@ -3,6 +3,7 @@ var router = express.Router();
 var request = require('request');
 var Repo = require('../model/repo');
 var Commit = require('../model/commit');
+var Language = require('../model/languages');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -67,25 +68,11 @@ router.get('/contributions', function(req, res) {
 
 /* GET commit languages*/
 router.get('/lang', function(req, res){
-    Repo.find(function(err, repos){
+    Language.find(function(err, languages){
         if(err){
             return res.status(500).send(err);
         }
-        repos.forEach(function(repo) {
-            request({
-                url: 'https://api.github.com/repos/' + repo.owner + '/' + repo.name + '/languages',
-                headers: {
-                    'User-Agent': 'request'
-                }
-            }, function(err, response, body) {
-                var languagesObj = JSON.parse(body);
-                console.log(languagesObj);
-                //languagesObj.forEach(function(data) {
-                    //각 랭귀지 별로의 바이트 수를 카운트
-                //});
-            });
-        });
-        res.sendStatus(200);
+        res.status(200).send(languages);
     });
 });
 

@@ -7,8 +7,7 @@ var Schema = mongoose.Schema;
 
 var repoSchema = new Schema({
     name: String,
-    owner: String,
-    languages: {}
+    owner: String
 });
 
 module.exports = mongoose.model('repo', repoSchema);
