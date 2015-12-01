@@ -39,24 +39,25 @@ body {
   z-index: 99;
 }
 
-.rangeOption {
+.option {
   position: absolute;
   top: 30px;
-  right: 30px;
 }
+.option.mode { left: 30px; }
+.option.range { right: 30px; }
 
-.rangeOption span {
+.option span {
   opacity: 0.5;
   font-size: 9pt;
   padding: 0 .5em;
   color: #00B7FF;
 }
 
-.rangeOption span.selected {
+.option span.selected {
   color: white;
 }
 
-.rangeOption span:hover {
+.option span:hover {
   opacity: 1;
 }
 
