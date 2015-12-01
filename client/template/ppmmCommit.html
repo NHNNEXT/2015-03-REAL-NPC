@@ -1,22 +1,27 @@
 <div class = "dash-tile ppmmCommit">
     <h2>Commit Lines</h2>
-    <div class="rangeOption">
-        <span ng-repeat="range in rangeOptions" ng-click="makeChart(range)" ng-class="{selected:isSelected(range)}">{{ range.title }}</span>
+    <div class="option mode">
+        <span ng-class="['ppmmCommitMode', {selected:isModeSelected('team')}]" ng-click="setMode('team')">Team</span>
+        <span ng-class="['ppmmCommitMode', {selected:isModeSelected('recover')}]" ng-click="setMode('recover')">Recover</span>
+    </div>
+    <div class="option range">
+        <span ng-repeat="range in rangeOptions" ng-click="setRange(range)" ng-class="{selected:isRangeSelected(range)}">{{ range.title }}</span>
     </div>
     <svg baseProfile="full" xmlns="http://www.w3.org/2000/svg" width="200px" height="200px">
-        <rect width="100%" height="100%" fill="#31C0FF" />
+        <rect width="100%" height="100%" fill="#31C0FF"></rect>
         <rect ng-repeat="group in chartData"
-              ng-attr-x="{{group.x | percent}}" ng-attr-y="{{group.y | percent}}"
-              ng-attr-height="{{group.height | percent}}" ng-attr-width="{{group.width | percent}}"
+              ng-attr-x="{{group.x | percent:1}}" ng-attr-y="{{group.y | percent:1}}"
+              ng-attr-height="{{group.height | percent:1}}" ng-attr-width="{{group.width | percent:1}}"
               ng-attr-class="{{group.className}}">
-            <title>{{group.name}} : {{group.lines | number}}</title>
+            <title>{{group.name}}: {{group.lines | number}} lines, {{group.commits | number}} commits
+                ({{(group.lines / group.commits) | number:0}} lines per commit)</title>
         </rect>
     </svg>
     <div id="ppmmCommitLegend" class="ppmmCommitLegend">
-        <div ng-repeat = "group in chartData" data-toggle="tooltip" title="{{group.name}} : {{group.lines | number}}">
-            <div ng-attr-class="{{group.className}}"></div>
-            {{group.name}} : {{group.ratio | percent}}
+        <div ng-repeat = "group in chartData" data-toggle="tooltip"
+             title="{{group.name}}: {{group.lines | number}} lines, {{group.commits | number}} commits ({{(group.lines / group.commits) | number:0}} lines per commit)">
+            <div ng-class="group.className"></div>
+            {{group.name}}: {{group.ratio | percent:1}}
         </div>
     </div>
-
 </div>

@@ -22,30 +22,39 @@
     ];
 
     var app = angular.module('npcApp');
-    app.filter('percent', function() {
-        return function(ratio) {
-            return Math.round(ratio * 1000) / 10 + '%';
+    app.filter('percent', function($filter) {
+        return function(number, fractionSize) {
+            return $filter('number')(number * 100, fractionSize || 0) + '%';
         };
     });
     app.controller('ppmmCommitController', function($scope, $http) {
-        var recoverMap = {
-            "zerohouse": "2-3",
-            "yskoh": "2-4",
-            "ellen24h": "2-4",
-            "jinuskr": "4-10",
-            "hataeho1": "2-4",
-            "HwangJJung": "2-4",
-            "dragonist": "2-4",
-            "030ii": "2-4",
-            "hyes": "2-3",
-            "milooy": "2-4",
-            "hyeyeounj": "2-3"
-        };
-        var groups = ['2-3', '2-4', '3-7', '3-8', '3-9', '4-10'];
-        var members = recoverMap;
-
+        var controller = this;
         var today = new Date();
-        function makeChart(range) {
+
+        function teamName(commit) {
+            return (commit.owner + '-' + commit.repoName)
+                .split('-').slice(-2).join('-');
+        }
+
+        function recoverName(commit) {
+            var recoverMap = {
+                "zerohouse": "2-3",
+                "yskoh": "2-4",
+                "ellen24h": "2-4",
+                "jinuskr": "4-10",
+                "hataeho1": "2-4",
+                "HwangJJung": "2-4",
+                "dragonist": "2-4",
+                "030ii": "2-4",
+                "hyes": "2-3",
+                "milooy": "2-4",
+                "hyeyeounj": "2-3"
+            };
+            return recoverMap[commit.name] || 'else';
+        }
+
+        function makeChart() {
+            var range = controller.range;
             var startDate = new Date(
                 today.getFullYear() - (range.years || 0),
                 today.getMonth() - (range.months || 0),
@@ -53,68 +62,87 @@
             );
             var since = 'since=' + getLocalDateString(startDate);
 
+            var groupMapper = teamName;
+            var groupNames;
+            switch (controller.mode) {
+                case 'recover':
+                    groupMapper = recoverName;
+                    groupNames = ['2-3', '2-4', '3-7', '3-8', '3-9', '4-10'];
+                    break;
+            }
+
             $http.get('http://localhost:3000/commits?' + since).success(function(data) {
                 var totalLine = 0;
-                var chartData = groups.map(function(name) {
-                    return {
-                        'name': name,
-                        'lines': 0
-                    };
-                });
+                var groups = {};
 
-                // Count all addition from data
-                var additions = {};
                 data.forEach(function(commit) {
-                    var group = members[commit.name] || 'else';
-                    additions[group] = additions[group] || 0;
-                    additions[group] += commit.addition;
+                    var name = groupMapper(commit);
+                    groups[name] = groups[name] || {'lines': 0, 'commits': 0};
+                    groups[name].lines += commit.addition;
+                    groups[name].commits++;
                 });
 
-                // Update groups by chartData
-                chartData.forEach(function(group) {
-                    group.lines = additions[group.name] || 0;
-                    totalLine += group.lines;
-                    return group;
+                var keys = groupNames || Object.keys(groups);
+                var chartData =
+                    keys.filter(function(name) {    // remove 'else' group
+                        return name != 'else';
+                    }).map(function(name) {         // set lines and commit
+                        var group = groups[name] || {'lines': 0, 'commits': 0};
+                        totalLine += group.lines;
+                        return {
+                            'name': name,
+                            'lines': group.lines,
+                            'commits': group.commits
+                        };
+                    }).sort(function(a, b) {        // sort by lines
+                        return b.lines - a.lines;
+                    });
+
+                var leftWidth = 0,
+                    rightLines = 0,
+                    rightTotal;
+                chartData.forEach(function(group, index) {
+                    group.ratio = group.lines / totalLine;
+                    group.className = 'series series-' + index;
+
+                    if (index == 0) {   // left side (1st group)
+                        group.x = 0;
+                        group.y = 0;
+                        group.width = leftWidth = (group.lines / totalLine);
+                        group.height = 1;
+                        rightTotal = (totalLine - group.lines) || 1;
+                    } else {            // right side (other groups)
+                        group.x = leftWidth;
+                        group.y = rightLines / rightTotal;
+                        group.width = 1 - leftWidth;
+                        group.height = group.lines / rightTotal;
+                        rightLines += group.lines;
+                    }
                 });
 
-                // Sort groups by chartData
-                chartData.sort(function(a, b) {
-                    return b.lines - a.lines;
-                });
-
-                chartData.forEach(function(data, index) {
-                    data.ratio = data.lines / totalLine;
-                    data.className = 'series series-' + index;
-                });
-
-                // Calculate width and height
-                // 1st group (left side)
-                chartData[0].x      = 0;
-                chartData[0].y      = 0;
-                chartData[0].width  = chartData[0].lines / totalLine;
-                chartData[0].height = 1;
-
-                // other groups (right side)
-                var lines = 0;
-                var rightTotal = totalLine - chartData[0].lines;
-                for (var index = 1; index < chartData.length; index++) {
-                    chartData[index].x = chartData[0].width;
-                    chartData[index].y = lines / rightTotal;
-                    chartData[index].width = 1 - chartData[0].width;
-                    chartData[index].height = chartData[index].lines / rightTotal;
-                    lines += chartData[index].lines;
-                }
-
-                $scope.range = range;
                 $scope.chartData = chartData;
             });
         }
 
-        $scope.makeChart = makeChart;
         $scope.rangeOptions = rangeOptions;
-        $scope.isSelected = function(range) {
-            return range == $scope.range;
+        $scope.setRange = function(range) {
+            controller.range = range;
+            makeChart();
         };
-        makeChart(rangeOptions[0]);
+        $scope.isRangeSelected = function(range) {
+            return (controller.range == range);
+        };
+
+        $scope.setMode = function(mode) {
+            controller.mode = mode;
+            makeChart();
+        };
+        $scope.isModeSelected = function(mode) {
+            return (controller.mode == mode);
+        }
+
+        controller.range = rangeOptions[0]
+        controller.mode = 'team';
+        makeChart();
     });
 })(angular);
