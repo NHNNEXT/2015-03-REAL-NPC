@@ -1,9 +1,13 @@
 var express = require('express');
-var router = express.Router();
 var request = require('request');
+var passport = require('passport');
+var GithubStrategy = require('passport-github2');
 var Repo = require('../model/repo');
 var Commit = require('../model/commit');
 var Language = require('../model/languages');
+var User = require('../model/user');
+
+var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -98,37 +102,34 @@ router.get('/lang', function(req, res){
     });
 });
 
-///* GET commit page. */
-//router.get('/commit', function(req, res) {
-//    Repo.find(function(err, repos) {
-//        if (err) {
-//            return res.status(500).send(err);
-//        }
-//        repos.forEach(function(repo) {
-//            request({
-//                url: 'https://api.github.com/repos/' + repo.owner + '/' + repo.name + '/commits',
-//                headers: {
-//                    'User-Agent': 'request'
-//                }
-//            }, function(err, response, body) {
-//                var commits = JSON.parse(body);
-//                commits.forEach(function(data) {
-//                    Commit.update({sha: data.sha}, {
-//                        sha: data.sha,
-//                        name: data.commit.author.name,
-//                        email: data.commit.author.email,
-//                        date: data.commit.author.date,
-//                        message: data.commit.message,
-//                        url: data.commit.url,
-//                        commentCount: data.commit.comment_count,
-//                        repoName: repo.name,
-//                        owner: repo.owner
-//                    }, {upsert: true});
-//                });
-//            });
-//        });
-//        res.sendStatus(200);
-//    });
-//});
+var GITHUB_CLIENT_ID = '4a7d4ecc97205f7eb214';
+var GITHUB_CLIENT_SECRET = '5e9f2b69b8ce5d8a86dc896c0dd01a1f3b78d90a';
+var DOMAIN = 'http://localhost:3000';
+
+/* Github login - passport setting */
+passport.use(new GithubStrategy({
+    clientID: GITHUB_CLIENT_ID,
+    clientSecret: GITHUB_CLIENT_SECRET,
+    callbackURL: DOMAIN + '/auth/github/callback'
+}, function(accessToken, refreshToken, profile, done) {
+    // Github logged on
+    console.log('profile:', profile);
+    var user = new User({
+        'username': profile.username,
+        'displayName': profile.displayName,
+        'email': profile.emails[0].value
+    });
+    done(null, user);
+}));
+
+/* Github login - routing setting */
+router.get('/auth/github', passport.authenticate('github', { scope: [ 'user:email' ] }));
+router.get('/auth/github/callback',
+    passport.authenticate('github', { failureRedirect: '/login' }),
+    function(req, res) {
+        // Successful authentication, redirect home.
+        console.log('Login success, redirect to home...');
+        res.redirect('/');
+    });
 
 module.exports = router;
