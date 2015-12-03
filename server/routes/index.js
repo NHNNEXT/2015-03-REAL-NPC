@@ -122,13 +122,22 @@ passport.use(new GithubStrategy({
     done(null, user);
 }));
 
+/**
+ * Returns a jwt token signed by the app secret
+ */
+function signToken(id, role) {
+    return jwt.sign({ _id: id, role: role }, config.secrets.session, { expiresInMinutes: 60*5 });
+}
+
 /* Github login - routing setting */
 router.get('/auth/github', passport.authenticate('github', { scope: [ 'user:email' ] }));
 router.get('/auth/github/callback',
     passport.authenticate('github', { failureRedirect: '/login' }),
     function(req, res) {
+        var token = signToken(req.user.username, 'user');
         // Successful authentication, redirect home.
         console.log('Login success, redirect to home...');
+        res.cookie('token', JSON.stringify(token));
         res.redirect('/');
     });
 
