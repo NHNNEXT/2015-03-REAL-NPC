@@ -141,7 +141,7 @@
             return (controller.mode == mode);
         }
 
-        controller.range = rangeOptions[0]
+        controller.range = rangeOptions[0];
         controller.mode = 'team';
         makeChart();
     });
