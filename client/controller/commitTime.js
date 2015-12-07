@@ -33,47 +33,29 @@
                 label: "After midnight"
             }
         ];
+        chartData.forEach(function(data) { data.value = 0; });
 
-        var commitTimeCount = [];
-        var range = 5;
-        for (var i = 0; i < range; i++) {
-            commitTimeCount[i] = 0;
-        }
-        var finishCount = 0;
+        $http.get('http://localhost:3000/commits').success(function(data) {
+            data.forEach(function(commit) {
+                var dateTime = new Date(commit.date);
+                var time = dateTime.getHours();
 
-        var ctx = document.getElementById("commitTime").getContext("2d");
-
-        $http.get('http://localhost:3000/repos').success(function(data) {
-            data.forEach(function(repo) {
-                finishCount++;
-                // 오늘 날짜 구해서 파라미터로 넣기
-                $http.get('https://api.github.com/repos/' + repo.owner + '/' + repo.name + '/commits').success(function(commits) {
-                    commits.forEach(function(commit) {
-                        var dateWithTime = new Date(commit.commit.author.date);
-                        var time = dateWithTime.getHours();
-
-                        if (time < 7) {
-                            commitTimeCount[4]++;
-                        } else if (time < 11) {
-                            commitTimeCount[0]++;
-                        } else if (time < 17) {
-                            commitTimeCount[1]++;
-                        } else if (time < 21) {
-                            commitTimeCount[2]++;
-                        } else {
-                            commitTimeCount[3]++;
-                        }
-                    });
-                    var series = commitTimeCount.map(function(count, i) {
-                        chartData[i].value = count;
-                        return chartData[i];
-                    });
-                    if (--finishCount == 0) {
-                        var chart = new Chart(ctx).Doughnut(series);
-                        document.getElementById('commitTimeLegend').innerHTML = chart.generateLegend();
-                    }
-                });
+                if (time < 7) {
+                    chartData[4].value++;
+                } else if (time < 11) {
+                    chartData[0].value++;
+                } else if (time < 17) {
+                    chartData[1].value++;
+                } else if (time < 21) {
+                    chartData[2].value++;
+                } else {
+                    chartData[3].value++;
+                }
             });
+
+            var ctx = document.getElementById("commitTime").getContext("2d");
+            var chart = new Chart(ctx).Doughnut(chartData);
+            document.getElementById('commitTimeLegend').innerHTML = chart.generateLegend();
         });
     });
 })(angular);
