@@ -9,19 +9,21 @@
     //route등록하는 config
     app.config(function($routeProvider, $locationProvider, $httpProvider) {
         $routeProvider
-        .when('/', {
-            templateUrl:'/template/main.html'
-        });
+            .when('/', {
+                templateUrl:'/template/main.html'
+            }).otherwise({
+                redirectTo: '/'
+            });
 
         $locationProvider.html5Mode(true);
-        $httpProvider.interceptors.push();
-    }).factory('authInterceptor', function($rootScope, $q, $cookies, $location) {
+        $httpProvider.interceptors.push('authInterceptor');
+    }).factory('authInterceptor', function($rootScope, $q, $cookies, $window) {
         return {
             // Add authorization token to headers
             request: function(config) {
                 config.headers = config.headers || {};
-                if ($cookies.get('token')) {
-                    config.headers.Authorization = 'Bearer ' + $cookies.get('token');
+                if ($cookies.getObject('token')) {
+                    config.headers.Authorization = 'Bearer ' + $cookies.getObject('token').token;
                 }
                 return config;
             },
@@ -29,7 +31,7 @@
             // Intercept 401s and redirect you to login
             responseError: function(response) {
                 if (response.status === 401) {
-                    $location.path('/login');
+                    $window.location.href = '/login';
                     // remove any stale tokens
                     $cookies.remove('token');
                     return $q.reject(response);

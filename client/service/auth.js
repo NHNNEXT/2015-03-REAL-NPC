@@ -20,15 +20,15 @@
             },
 
             isLoggedIn: function() {
-                return currentUser.hasOwnProperty('role');
+                return ('role' in currentUser);
             },
 
             isAdmin: function() {
-                return currentUser.role === 'admin';
+                return currentUser.role === 'auth';
             },
 
             getToken: function() {
-                return $cookies.get('token');
+                return currentUser.token;
             }
         }
     });

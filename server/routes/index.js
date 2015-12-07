@@ -2,12 +2,17 @@ var express = require('express');
 var request = require('request');
 var passport = require('passport');
 var GithubStrategy = require('passport-github2');
+var jwt = require('jsonwebtoken');
+var expressJwt = require('express-jwt');
+
+var config = require('../config');
 var Repo = require('../model/repo');
 var Commit = require('../model/commit');
 var Language = require('../model/languages');
 var User = require('../model/user');
 
 var router = express.Router();
+var validateJwt = expressJwt({ secret: config.secrets.session });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -102,41 +107,70 @@ router.get('/lang', function(req, res){
     });
 });
 
-var GITHUB_CLIENT_ID = '4a7d4ecc97205f7eb214';
-var GITHUB_CLIENT_SECRET = '5e9f2b69b8ce5d8a86dc896c0dd01a1f3b78d90a';
-var DOMAIN = 'http://localhost:3000';
-
 /* Github login - passport setting */
 passport.use(new GithubStrategy({
-    clientID: GITHUB_CLIENT_ID,
-    clientSecret: GITHUB_CLIENT_SECRET,
-    callbackURL: DOMAIN + '/auth/github/callback'
+    clientID: config.github.clientID,
+    clientSecret: config.github.clientSecret,
+    callbackURL: config.github.callbackURL
 }, function(accessToken, refreshToken, profile, done) {
     // Github logged on
     console.log('profile:', profile);
-    var user = new User({
-        'username': profile.username,
-        'displayName': profile.displayName,
-        'email': profile.emails[0].value
+    User.findOne({ 'username': profile.username }, function(err, user) {
+        if (err) { return done(err); }
+        if (!user) {
+            user = new User({
+                'username': profile.username,
+                'displayName': profile.displayName,
+                'email': profile.emails[0].value,
+                'role': 'user'
+            });
+            user.save(function(err) {
+                if (err) return done(err);
+                done(err, user);
+            });
+        } else {
+            return done(err, user);
+        }
     });
-    done(null, user);
 }));
 
 /**
  * Returns a jwt token signed by the app secret
  */
-function signToken(id, role) {
-    return jwt.sign({ _id: id, role: role }, config.secrets.session, { expiresInMinutes: 60*5 });
+function signToken(user) {
+    return {
+        role: user.role,
+        token: jwt.sign({ _id: user.username, role: user.role }, config.secrets.session, { expiresIn: '12h' })
+    };
+}
+
+/**
+ * Verify given token with app secret
+ */
+function verifyToken(req, res, next) {
+    if (!req.headers || !req.headers.authorization) { return next(); }
+
+    var parts = req.headers.authorization.split(' ');
+    if (parts.length != 2 || parts[0] != 'Bearer') return next();
+
+    jwt.verify(parts[1], config.secrets.session, function (err, decoded) {
+        if (err) return next(err);
+        req['user'] = decoded;
+        next();
+    });
 }
 
 /* Github login - routing setting */
+router.get('/login', function(req, res) {
+    res.redirect('/auth/github');
+});
 router.get('/auth/github', passport.authenticate('github', { scope: [ 'user:email' ] }));
 router.get('/auth/github/callback',
     passport.authenticate('github', { failureRedirect: '/login' }),
     function(req, res) {
-        var token = signToken(req.user.username, 'user');
+        var token = signToken(req.user);
         // Successful authentication, redirect home.
-        console.log('Login success, redirect to home...');
+        console.log('Login success, redirect to home...', token);
         res.cookie('token', JSON.stringify(token));
         res.redirect('/');
     });
