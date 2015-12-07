@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var passport = require('passport');
+var config = require('./config');
 var routes = require('./routes/index');
 var update = require('./update');
 
@@ -27,12 +28,12 @@ passport.deserializeUser(function(obj, done) {
 });
 
 // uncomment after placing your favicon in /client
-//app.use(favicon(path.join(__dirname, 'client', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, '../client', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({secret: 'npcTestSecret', resave: true, saveUninitialized: true}));
+app.use(session({secret: config.secrets.session, resave: true, saveUninitialized: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, '../client')));
