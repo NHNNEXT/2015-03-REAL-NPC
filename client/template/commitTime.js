@@ -10,7 +10,8 @@
         return {
             restrict: 'E',
             templateUrl: 'template/commitTime.html',
-            controller: 'commitTimeController'
+            controller: 'commitTimeController',
+            scope: {}
         }
     });
 })(angular);
