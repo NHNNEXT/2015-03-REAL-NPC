@@ -20,7 +20,7 @@
             'other': 6
         }
 
-        $http.get('http://localhost:3000/lang').success(function (data) {
+        $http.get('/lang').success(function (data) {
             data.forEach(function (teamData, teamIndex) {
                 var langCount = [0, 0, 0, 0, 0, 0, 0];
                 for (var language in teamData.languages) {

@@ -26,7 +26,7 @@
             low: 0, height:'220px'
         });
 
-        $http.get('http://localhost:3000/repos').success(function(data) {
+        $http.get('/repos').success(function(data) {
             data.forEach(function(repo) {
                 var repoCommitCount = [];
                 for (var i = 0; i < range; i++) {

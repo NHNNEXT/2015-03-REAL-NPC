@@ -69,7 +69,7 @@
             ];
             chartData.forEach(function(data) { data.value = 0; });
 
-            $http.get('http://localhost:3000/commits?' + since).success(function(data) {
+            $http.get('/commits?' + since).success(function(data) {
                 data.forEach(function(commit) {
                     var dateTime = new Date(commit.date);
                     var time = dateTime.getHours();

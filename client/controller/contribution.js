@@ -49,7 +49,7 @@
         rect.append("title")
             .text(function(d) { return d; });
 
-        $http.get('http://localhost:3000/contributions').success(function(data) {
+        $http.get('/contributions').success(function(data) {
             rect.filter(function(d) { return d in data; })
                 .attr("class", function(d) { return "day " + color(data[d]); })
                 .select("title")

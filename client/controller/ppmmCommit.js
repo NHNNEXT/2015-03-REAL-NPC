@@ -71,7 +71,7 @@
                     break;
             }
 
-            $http.get('http://localhost:3000/commits?' + since).success(function(data) {
+            $http.get('/commits?' + since).success(function(data) {
                 var totalLine = 0;
                 var groups = {};
 
