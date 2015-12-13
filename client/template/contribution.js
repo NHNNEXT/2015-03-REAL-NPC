@@ -10,7 +10,8 @@
         return {
             restrict: 'E',
             templateUrl: 'template/contribution.html',
-            controller: 'contributionController'
+            controller: 'contributionController',
+            scope: {}
         }
     });
 })(angular);

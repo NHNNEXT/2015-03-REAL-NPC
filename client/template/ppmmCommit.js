@@ -10,7 +10,8 @@
         return {
             restrict: 'E',
             templateUrl: 'template/ppmmCommit.html',
-            controller: 'ppmmCommitController'
+            controller: 'ppmmCommitController',
+            scope: {}
         }
     });
 })(angular);

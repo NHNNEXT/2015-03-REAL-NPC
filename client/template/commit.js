@@ -11,7 +11,7 @@
            restrict: 'E',
            templateUrl: 'template/commit.html',
            controller: 'commitController',
-           controllerAs: 'Chartist'
+           scope: {}
        }
     });
 })(angular);

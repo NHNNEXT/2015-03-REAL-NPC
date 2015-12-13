@@ -10,7 +10,8 @@
         return {
             restrict: 'E',
             templateUrl: 'template/language.html',
-            controller: 'langController'
+            controller: 'langController',
+            scope: {}
             //controllerAs: 'Chartist'
         }
     });

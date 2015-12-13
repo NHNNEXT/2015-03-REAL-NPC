@@ -49,7 +49,7 @@
             data.forEach(function(repo){
                 $http.get('https://api.github.com/repos/'+ repo.owner + '/' + repo.name + '/languages').success(function(data) {
                     //각 obj의 key값을 가져와서 랭귀지로.
-                    console.log(Object.keys(data));
+                    //console.log(Object.keys(data));
                     //usedLangs.push(Object.keys(data));
                     usedLangs.push(Object.keys(data));
 
@@ -59,7 +59,7 @@
 
                     //--> 우선 랭귀지 받아온 것을 우리 서버에 저장을 하고, 후 여기서 꺼내는 방식으로.
                         });
-                console.log(usedLangs);
+                //console.log(usedLangs);
 
                 });
         });
