@@ -5,7 +5,7 @@
 (function(angular) {
     'use strict';
 
-    var app = angular.module('npcApp')
+    var app = angular.module('npcApp');
     app.controller('NavbarCtrl', function ($scope, $location, Auth) {
         $scope.menu = [{
             'title': 'Dashboard',
@@ -25,7 +25,7 @@
 
         $scope.logout = function() {
             Auth.logout();
-            $location.path('/login');
+            $location.path('/');
         };
 
         $scope.isActive = function(route) {

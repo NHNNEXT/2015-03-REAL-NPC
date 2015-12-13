@@ -10,7 +10,12 @@
     app.config(function($routeProvider, $locationProvider, $httpProvider) {
         $routeProvider
             .when('/', {
-                templateUrl:'/template/main.html'
+                controller: 'CheckLogin',
+                templateUrl: '/template/check.html'
+            }).when('/main', {
+                templateUrl: '/template/main.html'
+            }).when('/login', {
+                templateUrl: '/template/login.html'
             }).otherwise({
                 redirectTo: '/'
             });
