@@ -5,25 +5,38 @@
 (function(angular) {
     'use strict';
 
-    function getLocalDateString(date) {
-        var year = date.getFullYear();
-        var month = date.getMonth();
-        var day = date.getDate();
-        return year +
-            ((month < 10) ? '-0' : '-') + month +
-            ((day < 10) ? '-0' : '-') + day;
+    var today = new Date();
+    var _MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+    // a and b are javascript Date objects
+    function dateDiffInDays(a, b) {
+        // Discard the time and time-zone information.
+        var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+        var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+        return Math.floor((utc2 - utc1) / _MS_PER_DAY);
     }
 
-    var rangeOptions = [
-        { title: "1 week", days: 7},
-        { title: "2 week", days: 14},
-        { title: "1 month", days: 30},
-        { title: "3 month", days: 90}
-    ];
+    function getLocalDateString(date, simple) {
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+
+        var simpleForm = month + ((day < 10) ? '-0' : '-') + day;
+        return simple ?
+            simpleForm : year + ((month < 10) ? '-0' : '-') + simpleForm;
+    }
+
+    var lineColor = ["rgba(220,220,220,1)", "rgba(151,187,205,1)", "rgba(151,187,205,1)"];
+    var fillColor = ["rgba(220,220,220,0.2)", "rgba(151,187,205,0.2)", "rgba(151,187,205,0.2)"];
 
     var app = angular.module('npcApp');
-
     app.controller('commitController', function($scope, $http) {
+        var controller = this;
+        var range = 10; // 일단 기간, view에서 어떤 게 눌렸느냐에 따라 유동적으로 변경되어야 한다
+        var ctx = document.getElementById('commit').getContext('2d');
+
+        // Temp code
         var data = {
             labels: ["January", "February", "March", "April", "May", "June", "July"],
             datasets: [
@@ -52,36 +65,66 @@
 
         var ctx = document.getElementById("commit").getContext("2d");
         var chart = new Chart(ctx).Line(data);
+        // Temp code (end)
 
-        var self = this;
-        var today = new Date(); // 오늘 날짜를 받아온다.
-        var range = 10; // 일단 기간, view에서 어떤 게 눌렸느냐에 따라 유동적으로 변경되어야 한다
+        var startDate = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate() - range
+        );
+        var since = 'since=' + getLocalDateString(startDate);
+        $http.get('http://localhost:3000/commits?' + since).success(function(data) {
+            var commitData = {};
+            /* commitData Structure
+             commitData = { repoName: repoData, ... }
+             repoData = [ commitData, ... ] (index: dateDiff)
+             */
 
-        var labels = [];
-        for(var i = range-1 ; i >= 0 ; i-- ) {
-            labels[i] = getLocalDateString(today);
-        }
-        console.log(labels);
-        console.log(new Date());
-        var commitCount = {};
+            console.log(data);
+            data.forEach(function(commit) {
+                var repoName = commit.owner + commit.repoName;
+                var date = new Date(commit.date);
 
-        $http.get('http://localhost:3000/repos').success(function(data) {
-            data.forEach(function(repo, i) {
-                commitCount[repo.name] = {};
-            });
-        });
-
-        $http.get('http://localhost:3000/commits').success(function(data) {
-            data.forEach(function(commits, i) {
-                var dateWithTime = new Date(commits.date);
-                if (!commitCount[commits.repoName][getLocalDateString(dateWithTime)]) {
-                    commitCount[commits.repoName][getLocalDateString(dateWithTime)] = 1;
+                if (! (repoName in commitData)) {
+                    // Make new array with default value 0
+                    commitData[repoName] =
+                        Array.apply(null, Array(range)).map(function() { return 0; });
                 }
-                else {
-                    commitCount[commits.repoName][getLocalDateString(dateWithTime)]++;
+
+                var dateDiff = dateDiffInDays(date, today);
+                if (dateDiff < range) {
+                    commitData[repoName][dateDiff]++;
                 }
             });
-            console.log(commitCount);
+
+            console.log(commitData);
+            var chartData = {
+                labels : Array.apply(null, Array(range))
+                    .map(function(_, index) {
+                        var date = new Date(
+                            today.getFullYear(),
+                            today.getMonth(),
+                            today.getDate() - range + index
+                        );
+                        return getLocalDateString(date, true);
+                    }),
+                datasets : Object.keys(commitData).map(function(repoName, index) {
+                    return {
+                        label: repoName,
+                        fillColor: fillColor[index] || fillColor[0],
+                        strokeColor: lineColor[index] || lineColor[0],
+                        pointColor: lineColor[index] || lineColor[0],
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: lineColor[index] || lineColor[index],
+                        data: commitData[repoName]
+                    };
+                })
+            };
+
+            console.log(chartData);
+            if (controller.chart) controller.chart.destroy();
+            controller.chart = new Chart(ctx).Line(chartData);
         });
     });
 })(angular);
