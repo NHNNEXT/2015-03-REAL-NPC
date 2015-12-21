@@ -18,7 +18,7 @@
             'HTML': 5,
             'CSS': 5,
             'other': 6
-        }
+        };
 
         $http.get('/lang').success(function (data) {
             data.forEach(function (teamData, teamIndex) {

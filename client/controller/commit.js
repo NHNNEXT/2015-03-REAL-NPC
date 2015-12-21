@@ -5,161 +5,126 @@
 (function(angular) {
     'use strict';
 
+    var today = new Date();
+    var _MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+    // a and b are javascript Date objects
+    function dateDiffInDays(a, b) {
+        // Discard the time and time-zone information.
+        var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+        var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+        return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+    }
+
+    function getLocalDateString(date, simple) {
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+
+        var simpleForm = month + ((day < 10) ? '-0' : '-') + day;
+        return simple ?
+            simpleForm : year + ((month < 10) ? '-0' : '-') + simpleForm;
+    }
+
+    var lineColor = ["rgba(220,220,220,1)", "rgba(151,187,205,1)", "rgba(151,187,205,1)"];
+    var fillColor = ["rgba(220,220,220,0.2)", "rgba(151,187,205,0.2)", "rgba(151,187,205,0.2)"];
+
     var app = angular.module('npcApp');
     app.controller('commitController', function($scope, $http) {
-        var self = this;
-        var labels = ['D-9', 'D-8', 'D-7', 'D-6', 'D-5', 'D-4', 'D-3', 'D-2', 'D-1', 'today'];
-        var series = [];
-        var totalCommitCount = [];
-        /* totalCommitCount 배열 초기화 @TODO: 함수로 따로 구현하기 */
-        var range = 10;
-        for (var i = 0; i < range; i++) {
-            totalCommitCount[i] = 0;
-        }
+        var controller = this;
+        var range = 10; // 일단 기간, view에서 어떤 게 눌렸느냐에 따라 유동적으로 변경되어야 한다
+        var ctx = document.getElementById('commit').getContext('2d');
 
-        var chart = new Chartist.Line('.ct-chart-commit', {
-            labels: ['', '', '', '', '', '', '', '', '', ''],
-            series: [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            ]
-        }, {
-            low: 0, height:'220px'
-        });
-
-        $http.get('/repos').success(function(data) {
-            data.forEach(function(repo) {
-                var repoCommitCount = [];
-                for (var i = 0; i < range; i++) {
-                    repoCommitCount[i] = 0;
+        // Temp code
+        var data = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: [65, 59, 80, 81, 56, 55, 40]
+                },
+                {
+                    label: "My Second dataset",
+                    fillColor: "rgba(151,187,205,0.2)",
+                    strokeColor: "rgba(151,187,205,1)",
+                    pointColor: "rgba(151,187,205,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(151,187,205,1)",
+                    data: [28, 48, 40, 19, 86, 27, 90]
                 }
-                // 오늘 날짜 구해서 파라미터로 넣기
-                $http.get('https://api.github.com/repos/' + repo.owner + '/' + repo.name + '/commits').success(function(commits) {
-                    commits.forEach(function(commit) {
-                        var dateWithTime = new Date(commit.commit.author.date);
-                        var date = new Date(dateWithTime.toLocaleDateString());
-                        var today = new Date(new Date().toLocaleDateString());
-                        var diffDate = (today - date) / 1000 / 60 / 60 / 24;
+            ]
+        };
 
-                        if (diffDate < range) {
-                            totalCommitCount[diffDate]++;
-                            repoCommitCount[diffDate]++;
-                        }
-                    });
-                    series.push(repoCommitCount);
+        var ctx = document.getElementById("commit").getContext("2d");
+        var chart = new Chart(ctx).Line(data);
+        // Temp code (end)
 
-                    chart.update({
-                        labels: labels,
-                        series: series
-                    });
-                });
+        var startDate = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate() - range
+        );
+        var since = 'since=' + getLocalDateString(startDate);
+        $http.get('/commits?' + since).success(function(data) {
+            var commitData = {};
+            /* commitData Structure
+             commitData = { repoName: repoData, ... }
+             repoData = [ commitData, ... ] (index: dateDiff)
+             */
+
+            console.log(data);
+            data.forEach(function(commit) {
+                var repoName = commit.owner + commit.repoName;
+                var date = new Date(commit.date);
+
+                if (! (repoName in commitData)) {
+                    // Make new array with default value 0
+                    commitData[repoName] =
+                        Array.apply(null, Array(range)).map(function() { return 0; });
+                }
+
+                var dateDiff = dateDiffInDays(date, today);
+                if (dateDiff < range) {
+                    commitData[repoName][dateDiff]++;
+                }
             });
-            series.push(totalCommitCount);
-        });
 
-        // Let's put a sequence number aside so we can use it in the event callbacks
-        var seq = 0,
-            delays = 40,
-            durations = 250;
+            console.log(commitData);
+            var chartData = {
+                labels : Array.apply(null, Array(range))
+                    .map(function(_, index) {
+                        var date = new Date(
+                            today.getFullYear(),
+                            today.getMonth(),
+                            today.getDate() - range + index
+                        );
+                        return getLocalDateString(date, true);
+                    }),
+                datasets : Object.keys(commitData).map(function(repoName, index) {
+                    return {
+                        label: repoName,
+                        fillColor: fillColor[index] || fillColor[0],
+                        strokeColor: lineColor[index] || lineColor[0],
+                        pointColor: lineColor[index] || lineColor[0],
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: lineColor[index] || lineColor[index],
+                        data: commitData[repoName]
+                    };
+                })
+            };
 
-        // Once the chart is fully created we reset the sequence
-        chart.on('created', function() {
-            seq = 0;
-        });
-
-        // On each drawn element by Chartist we use the Chartist.Svg API to trigger SMIL animations
-        chart.on('draw', function(data) {
-            seq++;
-
-            if(data.type === 'line') {
-                // If the drawn element is a line we do a simple opacity fade in. This could also be achieved using CSS3 animations.
-                data.element.animate({
-                    opacity: {
-                        // The delay when we like to start the animation
-                        begin: seq * delays + 1000,
-                        // Duration of the animation
-                        dur: durations,
-                        // The value where the animation should start
-                        from: 0,
-                        // The value where it should end
-                        to: 0.5
-                    }
-                });
-            } else if(data.type === 'label' && data.axis === 'x') {
-                data.element.animate({
-                    y: {
-                        begin: seq * delays,
-                        dur: durations,
-                        from: data.y + 100,
-                        to: data.y,
-                        // We can specify an easing function from Chartist.Svg.Easing
-                        easing: 'easeOutQuart'
-                    }
-                });
-            } else if(data.type === 'label' && data.axis === 'y') {
-                data.element.animate({
-                    x: {
-                        begin: seq * delays,
-                        dur: durations,
-                        from: data.x - 100,
-                        to: data.x,
-                        easing: 'easeOutQuart'
-                    }
-                });
-            } else if(data.type === 'point') {
-                data.element.animate({
-                    x1: {
-                        begin: seq * delays,
-                        dur: durations,
-                        from: data.x - 10,
-                        to: data.x,
-                        easing: 'easeOutQuart'
-                    },
-                    x2: {
-                        begin: seq * delays,
-                        dur: durations,
-                        from: data.x - 10,
-                        to: data.x,
-                        easing: 'easeOutQuart'
-                    },
-                    opacity: {
-                        begin: seq * delays,
-                        dur: durations,
-                        from: 0,
-                        to: 1,
-                        easing: 'easeOutQuart'
-                    }
-                });
-            } else if(data.type === 'grid') {
-                // Using data.axis we get x or y which we can use to construct our animation definition objects
-                var pos1Animation = {
-                    begin: seq * delays,
-                    dur: durations,
-                    from: data[data.axis.units.pos + '1'] - 30,
-                    to: data[data.axis.units.pos + '1'],
-                    easing: 'easeOutQuart'
-                };
-
-                var pos2Animation = {
-                    begin: seq * delays,
-                    dur: durations,
-                    from: data[data.axis.units.pos + '2'] - 100,
-                    to: data[data.axis.units.pos + '2'],
-                    easing: 'easeOutQuart'
-                };
-
-                var animations = {};
-                animations[data.axis.units.pos + '1'] = pos1Animation;
-                animations[data.axis.units.pos + '2'] = pos2Animation;
-                animations['opacity'] = {
-                    begin: seq * delays,
-                    dur: durations,
-                    from: 0,
-                    to: 1,
-                    easing: 'easeOutQuart'
-                };
-
-                data.element.animate(animations);
-            }
+            console.log(chartData);
+            if (controller.chart) controller.chart.destroy();
+            controller.chart = new Chart(ctx).Line(chartData);
         });
     });
 })(angular);
