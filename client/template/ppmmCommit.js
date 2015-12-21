@@ -12,6 +12,6 @@
             templateUrl: 'template/ppmmCommit.html',
             controller: 'ppmmCommitController',
             scope: {}
-        }
+        };
     });
 })(angular);

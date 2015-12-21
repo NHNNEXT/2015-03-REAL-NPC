@@ -12,6 +12,6 @@
             templateUrl: 'template/contribution.html',
             controller: 'contributionController',
             scope: {}
-        }
+        };
     });
 })(angular);

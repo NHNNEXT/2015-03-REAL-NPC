@@ -36,37 +36,6 @@
         var range = 10; // 일단 기간, view에서 어떤 게 눌렸느냐에 따라 유동적으로 변경되어야 한다
         var ctx = document.getElementById('commit').getContext('2d');
 
-        // Temp code
-        var data = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            datasets: [
-                {
-                    label: "My First dataset",
-                    fillColor: "rgba(220,220,220,0.2)",
-                    strokeColor: "rgba(220,220,220,1)",
-                    pointColor: "rgba(220,220,220,1)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: [65, 59, 80, 81, 56, 55, 40]
-                },
-                {
-                    label: "My Second dataset",
-                    fillColor: "rgba(151,187,205,0.2)",
-                    strokeColor: "rgba(151,187,205,1)",
-                    pointColor: "rgba(151,187,205,1)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(151,187,205,1)",
-                    data: [28, 48, 40, 19, 86, 27, 90]
-                }
-            ]
-        };
-
-        var ctx = document.getElementById("commit").getContext("2d");
-        var chart = new Chart(ctx).Line(data);
-        // Temp code (end)
-
         var startDate = new Date(
             today.getFullYear(),
             today.getMonth(),
@@ -80,7 +49,6 @@
              repoData = [ commitData, ... ] (index: dateDiff)
              */
 
-            console.log(data);
             data.forEach(function(commit) {
                 var repoName = commit.owner + commit.repoName;
                 var date = new Date(commit.date);
@@ -97,7 +65,6 @@
                 }
             });
 
-            console.log(commitData);
             var chartData = {
                 labels : Array.apply(null, Array(range))
                     .map(function(_, index) {
@@ -122,7 +89,6 @@
                 })
             };
 
-            console.log(chartData);
             if (controller.chart) controller.chart.destroy();
             controller.chart = new Chart(ctx).Line(chartData);
         });

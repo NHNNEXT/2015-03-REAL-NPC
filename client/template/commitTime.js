@@ -12,6 +12,6 @@
             templateUrl: 'template/commitTime.html',
             controller: 'commitTimeController',
             scope: {}
-        }
+        };
     });
 })(angular);

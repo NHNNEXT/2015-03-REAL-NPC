@@ -13,6 +13,6 @@
             controller: 'langController',
             scope: {}
             //controllerAs: 'Chartist'
-        }
+        };
     });
 })(angular);

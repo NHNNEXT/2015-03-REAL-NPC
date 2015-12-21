@@ -139,7 +139,7 @@
         };
         $scope.isModeSelected = function(mode) {
             return (controller.mode == mode);
-        }
+        };
 
         controller.range = rangeOptions[0];
         controller.mode = 'team';

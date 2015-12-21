@@ -12,6 +12,6 @@
            templateUrl: 'template/commit.html',
            controller: 'commitController',
            scope: {}
-       }
+       };
     });
 })(angular);

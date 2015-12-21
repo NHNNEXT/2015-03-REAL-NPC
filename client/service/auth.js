@@ -30,6 +30,6 @@
             getToken: function() {
                 return currentUser.token;
             }
-        }
+        };
     });
 })(angular);
