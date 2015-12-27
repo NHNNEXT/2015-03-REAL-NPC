@@ -10,24 +10,55 @@ var Repo = require('../model/repo');
 var Commit = require('../model/commit');
 var Language = require('../model/languages');
 var User = require('../model/user');
+var Group = require('../model/group');
 
 var router = express.Router();
 var validateJwt = expressJwt({ secret: config.secrets.session });
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-    res.render('index', { title: 'Express' });
-});
-
-/* GET repositories */
-router.get('/repos', function(req, res) {
-    Repo.find(function(err, repos) {
+/**
+ * Get groups
+ */
+router.get('/groups', validateJwt, function(req, res) {
+    var user = req.user._id;
+    Group.find({'user': user}, function(err, groups) {
         if (err) {
             return res.status(500).send(err);
         }
 
-        res.status(200).send(repos);
+        res.status(200).send(groups);
+    })
+})
+
+/**
+ * Get repositories
+ * Parameters:
+ *  group   String  get repository of given group name, without this parameter it will get all repository
+ */
+router.get('/repos', validateJwt, function(req, res) {
+    var group = req.query.group || '';
+    Group.find({'user': req.user._id, 'name': group}, function(err, groups) {
+        if (err || groups.length == 0) {
+            return res.status(500).send(err);
+        }
+
+        Repo.find({'group': groups[0]._id}, function(err, repos) {
+            if (err) {
+                return res.status(500).send(err);
+            }
+
+            res.status(200).send(repos);
+        });
     });
+});
+
+/**
+ * Add repositories on group
+ */
+router.post('/repos/:group', validateJwt, function(req, res) {
+    var user = req.user._id;
+    var group = req.param.group;
+    var data = req.body;
+    console.log(user, group, data);
 });
 
 /**
@@ -107,6 +138,19 @@ router.get('/lang', function(req, res){
     });
 });
 
+/* Groups */
+router.get('/group/:userId', function(req, res) {
+    // Get gropus of current user
+});
+
+router.post('/group', function(req, res) {
+    // Create new group on current user
+});
+
+router.delete('/group/:groupName', function(req, res) {
+    // Delete group of current user
+});
+
 /* Github login - passport setting */
 passport.use(new GithubStrategy({
     clientID: config.github.clientID,
@@ -114,6 +158,8 @@ passport.use(new GithubStrategy({
     callbackURL: config.github.callbackURL
 }, function(accessToken, refreshToken, profile, done) {
     // Github logged on
+    console.log('accessToken:', accessToken);
+    console.log('refreshToken', refreshToken);
     console.log('profile:', profile);
     User.findOne({ 'username': profile.username }, function(err, user) {
         if (err) { return done(err); }
@@ -122,10 +168,15 @@ passport.use(new GithubStrategy({
                 'username': profile.username,
                 'displayName': profile.displayName,
                 'email': profile.emails[0].value,
+                'accessToken': accessToken,
                 'role': 'user'
             });
             user.save(function(err) {
                 if (err) return done(err);
+
+                var group = new Group({'user': user.username, 'name': ''});
+                group.save();
+
                 done(err, user);
             });
         } else {
@@ -157,6 +208,25 @@ function verifyToken(req, res, next) {
         if (err) return next(err);
         req['user'] = decoded;
         next();
+    });
+}
+
+/**
+ * Get repository list of given user
+ */
+function getRepository(user) {
+    request({
+        url: 'https://api.github.com/repos/' + repo.owner + '/' + repo.name + '/commits',
+        headers: {
+            'User-Agent': 'request',
+            'Authorization': 'Basic bmV4dG5wYzp0anN0bWRndXMx'
+        }
+    }, function(err, response, body) {
+        if (err) { return console.log(new Error(err)); }
+        var commits = body ? JSON.parse(body) : [];
+        commits.forEach(function(data) {
+            fetchCommit(data.sha, repo.owner, repo.name);
+        });
     });
 }
 

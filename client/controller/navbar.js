@@ -11,11 +11,8 @@
             'title': 'Dashboard',
             'link': '/'
         }, {
-            'title': 'Some',
-            'link': '/some'
-        }, {
-            'title': 'things',
-            'link': '/things'
+            'title': 'Setting',
+            'link': '/manage'
         }];
 
         $scope.isCollapsed = true;

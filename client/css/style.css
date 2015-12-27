@@ -5,6 +5,29 @@ body {
   background-color: #292929;
 }
 
+.ownerSearch {
+  color: black;
+}
+
+button {
+  color: black;
+}
+
+table.table {
+  width: 75%;
+  margin-bottom: 3em;
+}
+
+.list-group-item {
+  background-color: #303030;
+  color: white;
+}
+
+.list-group-item.active {
+  background-color: #5d5d5d;
+  border-color: inherit;
+}
+
 .tooltip {
   display: inline;
   position: relative;

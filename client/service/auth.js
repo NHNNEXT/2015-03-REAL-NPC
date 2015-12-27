@@ -27,6 +27,14 @@
                 return currentUser.role === 'auth';
             },
 
+            httpHeader: function(headers) {
+                headers = headers || {};
+                if ($cookies.getObject('token')) {
+                    headers.Authorization = 'Bearer ' + $cookies.getObject('token').token;
+                }
+                return headers;
+            },
+
             getToken: function() {
                 return currentUser.token;
             }

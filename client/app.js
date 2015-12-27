@@ -16,6 +16,10 @@
                 templateUrl: '/template/main.html'
             }).when('/login', {
                 templateUrl: '/template/login.html'
+            }).when('/manage', {
+                templateUrl: '/template/manageGroup.html',
+                controller: 'ManageGroup',
+                scope: {}
             }).otherwise({
                 redirectTo: '/'
             });
@@ -24,15 +28,6 @@
         $httpProvider.interceptors.push('authInterceptor');
     }).factory('authInterceptor', function($rootScope, $q, $cookies, $window) {
         return {
-            // Add authorization token to headers
-            request: function(config) {
-                config.headers = config.headers || {};
-                if ($cookies.getObject('token')) {
-                    config.headers.Authorization = 'Bearer ' + $cookies.getObject('token').token;
-                }
-                return config;
-            },
-
             // Intercept 401s and redirect you to login
             responseError: function(response) {
                 if (response.status === 401) {
