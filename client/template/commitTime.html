@@ -1,9 +1,9 @@
 <div class = "dash-tile commitTime">
-    <h2>Commit time</h2>
+    <div class="dash-tile-title">Commit Time</div>
     <div class="option range">
         <span ng-repeat="range in rangeOptions" ng-click="setRange(range)" ng-class="{selected:isRangeSelected(range)}">{{ range.title }}</span>
     </div>
-    <canvas id="commitTime" width="200px" height="200px"></canvas>
+    <canvas id="commitTime" class="commitTimeGraph" width="200px" height="200px"></canvas>
     <div id="commitTimeLegend">
         <ul class="doughnut-legend">
             <li ng-repeat="data in chartData" data-toggle="tooltip" title="{{data.tooltip}}">

@@ -1,47 +1,52 @@
 <header>
-    <div ng-include="'template/navbar.html'"></div>
+    <div ng-include="'template/header.html'"></div>
 </header>
-<div class="container">
-    <h1>Manage Group</h1>
-    <div class="row">
-        <div class="col-md-3">
-            <ul class="list-group">
-                <li ng-repeat="group in groups" class="list-group-item">{{group.name}}</li>
-                <li class="list-group-item active">+ add group</li>
-            </ul>
-        </div>
-        <div class="col-md-9">
-            <section class="container">
-                <table class="table">
-                    <tr>
-                        <th>Owner</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th></th>
-                    </tr>
-                    <tr ng-repeat="repo in repos">
-                        <td>{{repo.owner}}</td>
-                        <td>{{repo.name}}</td>
-                        <td>{{repo.description}}</td>
-                        <td><a href="">remove</a></td>
-                    </tr>
-                </table>
-                <hr>
-                <form>
-                    <div class="form-group">
-                        <label>Add repository to group: </label>
-                        <input ng-model="keyword" class="ownerSearch" type="text" placeholder="user or organization">
-                        <button type="button" ng-click="search()">Search</button>
-                    </div>
-                    <div>
-                        <div ng-repeat="repo in searchResult" class="checkbox">
-                            <input type="checkbox"><a ng-href="repo.url">{{repo.owner}}/{{repo.name}}</a>
-                            {{repo.description}}
+<nav>
+    <div ng-include="'template/nav.html'"></div>
+</nav>
+<section class="container">
+    <div class="section-wrapper">
+        <h1>Manage Group</h1>
+        <div class="row">
+            <div class="col-md-3">
+                <ul class="list-group">
+                    <li ng-repeat="group in groups" class="list-group-item">{{group.name}}</li>
+                    <li class="list-group-item active">+ add group</li>
+                </ul>
+            </div>
+            <div class="col-md-9">
+                <section class="container">
+                    <table class="table">
+                        <tr>
+                            <th>Owner</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th></th>
+                        </tr>
+                        <tr ng-repeat="repo in repos">
+                            <td>{{repo.owner}}</td>
+                            <td>{{repo.name}}</td>
+                            <td>{{repo.description}}</td>
+                            <td><a href="">remove</a></td>
+                        </tr>
+                    </table>
+                    <hr>
+                    <form>
+                        <div class="form-group">
+                            <label>Add repository to group: </label>
+                            <input ng-model="keyword" class="ownerSearch" type="text" placeholder="user or organization">
+                            <button type="button" ng-click="search()">Search</button>
                         </div>
-                        <button ng-show="searchResult.length > 0" type="button">Add</button>
-                    </div>
-                </form>
-            </section>
+                        <div>
+                            <div ng-repeat="repo in searchResult" class="checkbox">
+                                <input type="checkbox"><a ng-href="repo.url">{{repo.owner}}/{{repo.name}}</a>
+                                {{repo.description}}
+                            </div>
+                            <button ng-show="searchResult.length > 0" type="button">Add</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
         </div>
     </div>
-</div>
+</section>

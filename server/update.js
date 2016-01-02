@@ -61,16 +61,18 @@ function fetchCommit(sha, owner, name) {
             }, function(err, response, body) {
                 if (err) { return console.log(new Error(err)); }
                 var commit = JSON.parse(body);
-                var commitData = new Commit({
-                    sha: sha,
-                    owner: owner,
-                    repoName: name,
-                    date: commit.commit.author.date,
-                    addition: commit.stats.additions,
-                    deletion: commit.stats.deletions,
-                    name: commit.author.login
-                });
-                commitData.save();
+		if (commit.author) {
+                	var commitData = new Commit({
+                	    sha: sha,
+                	    owner: owner,
+                	    repoName: name,
+                	    date: commit.commit.author.date,
+                	    addition: commit.stats.additions,
+                	    deletion: commit.stats.deletions,
+                	    name: commit.author.login
+                	});
+                	commitData.save();
+		}
             });
         }
     });

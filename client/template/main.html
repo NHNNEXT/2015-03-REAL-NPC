@@ -1,12 +1,15 @@
 <header>
-    <div ng-include="'template/navbar.html'"></div>
+    <div ng-include="'template/header.html'"></div>
 </header>
+<nav>
+    <div ng-include="'template/nav.html'"></div>
+</nav>
 <section class="container">
-    <div class="row">
-        <commit class="col-md-6"></commit>
-        <ppmm-commit class="col-md-6"></ppmm-commit>
-        <commit-time class="col-md-6"></commit-time>
-        <contribution class="col-md-6"></contribution>
-        <commit-language class="col-md-6"></commit-language>
+    <div class="section-wrapper">
+        <commit></commit>
+        <ppmm-commit></ppmm-commit>
+        <commit-time></commit-time>
+        <contribution></contribution>
+        <commit-language></commit-language>
     </div>
 </section>

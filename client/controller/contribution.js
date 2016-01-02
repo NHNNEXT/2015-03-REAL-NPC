@@ -7,14 +7,14 @@
 
     var app = angular.module('npcApp');
     app.controller('contributionController', function($scope, $http) {
-        var PERIOD_MONTH = 6;
+        var PERIOD_MONTH = 12;
 
         var today = new Date(),
             tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
             startDate = new Date(today.getFullYear(), today.getMonth() - PERIOD_MONTH, today.getDate());
 
-        var width = 400,
-            height = 200,
+        var width = 600,
+            height = 150,
             cellSize = width / (PERIOD_MONTH * 4 + 1) - 2; // cell size
 
         var format = d3.time.format("%Y-%m-%d");

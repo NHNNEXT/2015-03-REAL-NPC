@@ -24,7 +24,7 @@
                 redirectTo: '/'
             });
 
-        $locationProvider.html5Mode(true);
+//        $locationProvider.html5Mode(true);
         $httpProvider.interceptors.push('authInterceptor');
     }).factory('authInterceptor', function($rootScope, $q, $cookies, $window) {
         return {

@@ -8,6 +8,12 @@
     var today = new Date();
     var _MS_PER_DAY = 1000 * 60 * 60 * 24;
 
+    var rangeOptions = [
+        { title: "1 week", days: 7 },
+        { title: "1 month", months: 1 },
+        { title: "3 months", months: 3 },
+        { title: "6 months", months: 6 }
+    ];
     // a and b are javascript Date objects
     function dateDiffInDays(a, b) {
         // Discard the time and time-zone information.
@@ -91,6 +97,10 @@
 
             if (controller.chart) controller.chart.destroy();
             controller.chart = new Chart(ctx).Line(chartData);
+
+            $scope.rangeOptions = rangeOptions;
+
+
         });
     });
 })(angular);

@@ -1,101 +1,100 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  color: white;
-  background-color: #292929;
-}
 
 .ownerSearch {
-  color: black;
+color: black;
 }
 
 button {
-  color: black;
+color: black;
 }
 
 table.table {
-  width: 75%;
-  margin-bottom: 3em;
+width: 75%;
+margin-bottom: 3em;
 }
 
 .list-group-item {
-  background-color: #303030;
-  color: white;
+background-color: #303030;
+color: white;
 }
 
 .list-group-item.active {
-  background-color: #5d5d5d;
-  border-color: inherit;
+background-color: #5d5d5d;
+border-color: inherit;
 }
 
 .tooltip {
-  display: inline;
-  position: relative;
+    display: inline;
+    position: relative;
 }
 
 .tooltip:hover:after {
-  background: #111;
-  background: rgba(0,0,0,.8);
-  border-radius: .5em;
-  bottom: 1.35em;
-  color: #fff;
-  content: attr(title);
-  display: block;
-  left: 1em;
-  padding: .3em 1em;
-  position: absolute;
-  text-shadow: 0 1px 0 #000;
-  white-space: nowrap;
-  z-index: 98;
+    background: #111;
+    background: rgba(0,0,0,.8);
+    border-radius: .5em;
+    bottom: 1.35em;
+    color: #fff;
+    content: attr(title);
+    display: block;
+    left: 1em;
+    padding: .3em 1em;
+    position: absolute;
+    text-shadow: 0 1px 0 #000;
+    white-space: nowrap;
+    z-index: 98;
 }
 
 .tooltip:hover:before {
-  border: solid;
-  border-color: #111 transparent;
-  border-color: rgba(0,0,0,.8) transparent;
-  border-width: .4em .4em 0 .4em;
-  bottom: 1em;
-  content: "";
-  display: block;
-  left: 2em;
-  position: absolute;
-  z-index: 99;
+    border: solid;
+    border-color: #111 transparent;
+    border-color: rgba(0,0,0,.8) transparent;
+    border-width: .4em .4em 0 .4em;
+    bottom: 1em;
+    content: "";
+    display: block;
+    left: 2em;
+    position: absolute;
+    z-index: 99;
 }
 
 .option {
-  position: absolute;
-  top: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 30px;
 }
-.option.mode { left: 30px; }
-.option.range { right: 30px; }
+.option.mode {
+    right: 300px;
+}
+.option.range {
+    right: 30px;
+}
 
 .option span {
-  opacity: 0.5;
-  font-size: 9pt;
-  padding: 0 .5em;
-  color: #00B7FF;
+    opacity: 0.5;
+    font-size: 9pt;
+    padding: 0 .5em;
+    color: #00B7FF;
 }
 
 .option span.selected {
-  color: white;
+    color: white;
 }
 
 .option span:hover {
-  opacity: 1;
+    opacity: 1;
 }
 
 #commitTimeLegend {
-  display: inline-block;
+    display: inline-block;
 }
 #commitTimeLegend li span {
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  margin-right: 5px;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    margin-right: 5px;
 }
 
 #commitTimeLegend ul {
-  list-style: none;
+    list-style: none;
 }
 
 /* ppmmCommit */
@@ -107,54 +106,43 @@ table.table {
 .ppmmCommit .series-5 {fill:green; background-color:green;}
 
 #ppmmCommitLegend {
-  display: inline-block;
-  color: white;
-  padding: 25px;
+    display: inline-block;
+    color: white;
+    padding: 25px;
 }
 
 #ppmmCommitLegend .series {
-  width: 15px;
-  height: 15px;
-  display: inline-block;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
 }
 
 a {
-  color: #00B7FF;
+    color: #00B7FF;
 }
 
 /* Contribution */
 .contribution {
-  font: 10px sans-serif;
-  shape-rendering: crispEdges;
+    shape-rendering: crispEdges;
 }
 
 .year {
-  text-anchor: middle;
+    text-anchor: middle;
 }
 
 .day {
-  stroke: #ccc;
-}
-.dash-tile {
-  margin-top: 20px;
-  padding: 30px;
-  opacity: 0.75;
-  background-color: #333;
-  border-radius: 5%;
-}
-.dash-tile:hover {
-  opacity: 1;
+    stroke: #ccc;
 }
 
 .ct-series-e .ct-bar,.ct-series-e .ct-line,.ct-series-e .ct-point,.ct-series-e .ct-slice-donut {
-  stroke: skyblue;
+    stroke: skyblue;
 }
 
 .ct-series-e .ct-area,.ct-series-e .ct-slice-pie {
-  fill: skyblue;
+    fill: skyblue;
 }
 
-.RdYlGn .q0-11{fill:#333}
+.RdYlGn .q0-11{fill:#202B33}
 .RdYlGn .q1-11{fill:rgb(236,247,197)}
 .RdYlGn .q2-11{fill:rgb(217,239,139)}
 .RdYlGn .q3-11{fill:rgb(191,228,122)}
@@ -165,3 +153,183 @@ a {
 .RdYlGn .q8-11{fill:rgb(26,152,80)}
 .RdYlGn .q9-11{fill:rgb(13,127,67)}
 .RdYlGn .q10-11{fill:rgb(0,104,55)}
+
+html, body {
+    font: 14px "Roboto", "Helvetica Neue", "Lucida Grande", Helvetica, Arial, sans-serif;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #202B33;
+    /*color: #738491;*/
+    color: white;
+    font-weight: 200;
+}
+
+header, nav, section {
+    /*opacity: 0.8;*/
+}
+header {
+    position: fixed;
+    background-color: #202B33;
+    border-bottom: solid 2px rgb(22, 30, 35);
+    width: 100%;
+    height: 50px;
+    z-index: 2;
+    min-width: 1000px;
+}
+nav {
+    background-color: #202B33;
+    width: 15%;
+    border-right: solid 2px rgb(22, 30, 35);
+    min-width: 152px;
+    height: 100%;
+    position: fixed;
+}
+
+section {
+    top: 50px;
+    position: relative;
+    overflow-y: scroll;
+    height: 100%;
+    margin-left: 16%;
+    background-color: #202B33;
+    width:80%;
+}
+.header{
+    height: 50px;
+    display: inline-block;
+    font-weight: 200;
+}
+.left-header{
+    width: 15%;
+    border-right: solid 2px rgb(22, 30, 35);
+    text-align: center;
+}
+.middle-header{
+    position: absolute;
+    left: 15%;
+    width: 65%;
+    border-right: solid 2px rgb(22, 30, 35);
+}
+.right-header{
+    float: right;
+    width: 18%;
+}
+
+.header a:hover {
+    color: deepskyblue;
+}
+.header a {
+    text-decoration: none;
+    /*color: #738491;*/
+    color: white;
+    margin-left: 30px;
+    line-height: 50px;
+    height: 50px;
+    font-size: 15px;
+    width: 100px;
+}
+
+.left-header a {
+    margin: 0;
+    font-size: 30px;
+    color: skyblue;
+}
+.nav-wrap{
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin-top: 100px;
+}
+.nav-wrap .group-h {
+    line-height: 50px;
+    margin-left: 50px;
+    height: 50px;
+    font-size: 15px;
+    color: skyblue;
+    font-weight: 100;
+    padding-bottom: 10px;
+}
+.nav-wrap .group {
+    height: 40px;
+}
+.nav-wrap .group a {
+    display: block;
+    margin-left: 40px;
+    line-height: 40px;
+    height: 40px;
+    font-size: 12px;
+    text-decoration: none;
+    /*color: #738491;*/
+    color: white;
+    font-weight: 200;
+}
+
+.nav-wrap .group:hover {
+    margin: 0 auto;
+    width: 140px;
+    border: solid 1px deepskyblue;
+    border-radius: 5px;
+}
+
+.nav-wrap .group a:hover{
+    color: deepskyblue;
+}
+
+.dash-tile {
+    position: relative;
+    /*display: inline-block;*/
+    width: 90%;
+    min-width: 600px;
+    float: left;
+    height: auto;
+    margin: 10px;
+    padding: 30px;
+    opacity: 0.9;
+    border: solid 1px rgb(22, 30, 35);
+    border-radius: 10px;
+    font-weight: 200;
+}
+
+.dash-tile:hover {
+    opacity: 1;
+    border: solid 1px deepskyblue;
+    color: lightskyblue;
+}
+
+
+.section-wrapper {
+    position: relative;
+    width: 90%;
+    padding: 50px;
+    height: 1000px;
+}
+
+.commit-graph {
+    margin-top: 30px;
+    width: 85%;
+    height: 200px;
+}
+
+
+.dash-tile-title {
+    position: relative;
+    height: 30px;
+    line-height: 30px;
+    font-size: 20px;
+    padding-bottom: 10px;
+    font-weight: 500;
+}
+
+.commitLines, .commitTimeGraph{
+    margin-top: 30px;
+    margin-left: 50px;
+}
+
+.RdYlGn, .languageGraph {
+    margin-left: 50px;
+}
+
+
