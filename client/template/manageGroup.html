@@ -6,12 +6,22 @@
 </nav>
 <section class="container">
     <div class="section-wrapper">
-        <h1>Manage Group</h1>
+        <div class="mng-grp">MANAGE GROUPS</div>
         <div class="row">
             <div class="col-md-3">
                 <ul class="list-group">
                     <li ng-repeat="group in groups" class="list-group-item">{{group.name}}</li>
-                    <li class="list-group-item active">+ add group</li>
+                    <li class="list-group-item">NEXT Institute <a href="">remove</a></li> <!-- 더미데이터 -->
+                    <li class="list-group-item">Game <a href="">remove</a></li> <!-- 더미데이터 -->
+                    <li class="list-group-item active">Web :: Server <a href="">remove</a></li> <!-- 더미데이터 -->
+                    <li class="list-group-item">Web :: Client <a href="">remove</a></li> <!-- 더미데이터 -->
+                    <li class="list-group-item">Mobile :: Android <a href="">remove</a></li> <!-- 더미데이터 -->
+                    <li class="list-group-item">Mobile :: iOS <a href="">remove</a></li> <!-- 더미데이터 -->
+                    <form>
+                        <span>Create Group : </span>
+                        <input class="ownerSearch" type="text" placeholder="Group Name">
+                        <button type="button">Add</button>
+                    </form>
                 </ul>
             </div>
             <div class="col-md-9">
@@ -20,17 +30,16 @@
                         <tr>
                             <th>Owner</th>
                             <th>Name</th>
-                            <th>Description</th>
+                            <!--<th>Description</th>-->
                             <th></th>
                         </tr>
                         <tr ng-repeat="repo in repos">
                             <td>{{repo.owner}}</td>
                             <td>{{repo.name}}</td>
-                            <td>{{repo.description}}</td>
+                            <!--<td>{{repo.description}}</td>-->
                             <td><a href="">remove</a></td>
                         </tr>
                     </table>
-                    <hr>
                     <form>
                         <div class="form-group">
                             <label>Add repository to group: </label>

@@ -1,25 +1,17 @@
-
+a {
+    text-decoration: none;
+}
 .ownerSearch {
-color: black;
+    color: black;
 }
 
 button {
-color: black;
+    color: black;
 }
 
 table.table {
-width: 75%;
-margin-bottom: 3em;
-}
-
-.list-group-item {
-background-color: #303030;
-color: white;
-}
-
-.list-group-item.active {
-background-color: #5d5d5d;
-border-color: inherit;
+    width: 75%;
+    margin-bottom: 3em;
 }
 
 .tooltip {
@@ -236,6 +228,7 @@ section {
     margin: 0;
     font-size: 30px;
     color: skyblue;
+    font-weight: 900;
 }
 .nav-wrap{
     position: relative;
@@ -244,38 +237,45 @@ section {
     margin-top: 100px;
 }
 .nav-wrap .group-h {
-    line-height: 50px;
-    margin-left: 50px;
-    height: 50px;
+    line-height: 15px;
+    margin-left: 10px;
+    height: 15px;
     font-size: 15px;
-    color: skyblue;
+    color: deepskyblue;
     font-weight: 100;
     padding-bottom: 10px;
+    border-bottom: solid 1px deepskyblue;
+    margin-bottom: 10px
 }
 .nav-wrap .group {
-    height: 40px;
+    height: 30px;
 }
 .nav-wrap .group a {
     display: block;
-    margin-left: 40px;
-    line-height: 40px;
-    height: 40px;
+    margin-left: 30px;
+    margin-top: 3px;
+    line-height: 30px;
+    height: 30px;
     font-size: 12px;
     text-decoration: none;
     /*color: #738491;*/
     color: white;
     font-weight: 200;
-}
+    padding-left: 20px;
+    border-left: solid 3px deepskyblue;
 
-.nav-wrap .group:hover {
-    margin: 0 auto;
-    width: 140px;
-    border: solid 1px deepskyblue;
-    border-radius: 5px;
 }
 
 .nav-wrap .group a:hover{
-    color: deepskyblue;
+    background-color: deepskyblue;
+    color: white;
+    border-left: solid 3px white;
+}
+
+.nav-wrap .group .selected{
+    background-color: deepskyblue;
+    color: white;
+    border-left: solid 3px white;
 }
 
 .dash-tile {
@@ -296,7 +296,7 @@ section {
 .dash-tile:hover {
     opacity: 1;
     border: solid 1px deepskyblue;
-    color: lightskyblue;
+    color: deepskyblue;
 }
 
 
@@ -332,4 +332,107 @@ section {
     margin-left: 50px;
 }
 
+button {
+    border: solid 2px deepskyblue;
+    background-color: transparent;
+    color: deepskyblue;
+    cursor: pointer;
+    height: 30px;
+    width: 70px;
+    border-radius: 4px;
+    margin-left: 20px;
+}
 
+.ownerSearch {
+    height: 30px;
+    width: 200px;
+    font-size: 20px;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    border-bottom: solid 2px lightcyan;
+    color: white;
+}
+
+ul, li {
+    list-style: none;
+
+}
+
+.mng-grp {
+    position: relative;
+    height: 20px;
+    line-height: 20px;
+    font-size: 20px;
+    padding-bottom: 10px;
+    font-weight: 100;
+    color: deepskyblue;
+    border-bottom: 1px solid deepskyblue;
+}
+
+.list-group {
+    background-color: transparent;
+}
+
+.list-group-item {
+    height: 40px;
+    line-height: 40px;
+    padding-left: 20px;
+    margin-top: 5px;
+    background-color: transparent;
+    color: white;
+    border-left: solid 4px deepskyblue;
+    cursor: pointer;
+}
+
+.list-group-item.active {
+    background-color: deepskyblue;
+    border-color: inherit;
+}
+.list-group-item:hover {
+    background-color: deepskyblue;
+    border-color: inherit;
+}
+
+.list-group span {
+    position: relative;
+    height: 30px;
+    line-height: 30px;
+    font-size: 15px;
+    padding-bottom: 10px;
+    font-weight: 300;
+    color: deepskyblue;
+}
+
+.list-group form {
+    margin-top: 10px;
+}
+
+.list-group a {
+    display: inline-block;
+    float: right;
+    margin-right: 10px;
+    color: white;
+}
+
+.list-group a:hover {
+    color: red;
+    font-weight: 500;
+}
+
+th {
+    color: deepskyblue;
+    font-weight: 100;
+}
+
+tr {
+    text-align: left;
+}
+
+label {
+    color: deepskyblue;
+}
+
+header .selected {
+    color: deepskyblue;
+}
