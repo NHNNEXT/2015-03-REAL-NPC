@@ -20,6 +20,13 @@
                 templateUrl: '/template/manageGroup.html',
                 controller: 'ManageGroup',
                 scope: {}
+            }).when('/commits', {
+                templateUrl: '/template/hCommits.html'
+            }).when('/commitlines', {
+                templateUrl: '/template/hCommitLines.html'
+
+            }).when('/committime', {
+                templateUrl: '/template/hCommitTime.html'
             }).otherwise({
                 redirectTo: '/'
             });

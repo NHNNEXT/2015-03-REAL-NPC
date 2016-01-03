@@ -123,7 +123,8 @@ a {
 }
 
 .day {
-    stroke: #ccc;
+    stroke: gray;
+    stroke-width: 0.4px;
 }
 
 .ct-series-e .ct-bar,.ct-series-e .ct-line,.ct-series-e .ct-point,.ct-series-e .ct-slice-donut {
@@ -133,18 +134,18 @@ a {
 .ct-series-e .ct-area,.ct-series-e .ct-slice-pie {
     fill: skyblue;
 }
-
+.day {fill:#202B33}
 .RdYlGn .q0-11{fill:#202B33}
-.RdYlGn .q1-11{fill:rgb(236,247,197)}
-.RdYlGn .q2-11{fill:rgb(217,239,139)}
-.RdYlGn .q3-11{fill:rgb(191,228,122)}
-.RdYlGn .q4-11{fill:rgb(166,217,106)}
-.RdYlGn .q5-11{fill:rgb(134,203,102)}
-.RdYlGn .q6-11{fill:rgb(102,189,99)}
-.RdYlGn .q7-11{fill:rgb(64,170,89)}
-.RdYlGn .q8-11{fill:rgb(26,152,80)}
-.RdYlGn .q9-11{fill:rgb(13,127,67)}
-.RdYlGn .q10-11{fill:rgb(0,104,55)}
+.RdYlGn .q1-11{fill:lightcyan}
+.RdYlGn .q2-11{fill:lightblue}
+.RdYlGn .q3-11{fill:lightskyblue}
+.RdYlGn .q4-11{fill:skyblue}
+.RdYlGn .q5-11{fill:cyan}
+.RdYlGn .q6-11{fill:cyan}
+.RdYlGn .q7-11{fill:cyan}
+.RdYlGn .q8-11{fill:deepskyblue}
+.RdYlGn .q9-11{fill:deepskyblue}
+.RdYlGn .q10-11{fill:deepskyblue}
 
 html, body {
     font: 14px "Roboto", "Helvetica Neue", "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -320,7 +321,7 @@ section {
     line-height: 30px;
     font-size: 20px;
     padding-bottom: 10px;
-    font-weight: 500;
+    font-weight: 100;
 }
 
 .commitLines, .commitTimeGraph{
@@ -347,10 +348,11 @@ button {
     height: 30px;
     width: 200px;
     font-size: 20px;
+    line-height: 30px;
     text-align: center;
     background-color: transparent;
     border: none;
-    border-bottom: solid 2px lightcyan;
+    border-bottom: 1px solid deepskyblue;
     color: white;
 }
 
@@ -435,4 +437,69 @@ label {
 
 header .selected {
     color: deepskyblue;
+}
+.msg {
+    cursor: pointer;
+    padding-bottom: 5px;
+}
+
+.msg-a {
+    display: block;
+    padding-left: 10px;
+    height: 25px;
+    line-height: 25px;
+}
+
+.msg-a:hover {
+    background-color: deepskyblue;
+    color: white;
+    border-left: solid 3px white;
+}
+
+.first-msg-a {
+    color: lightcyan;
+    border-left: solid 3px lightcyan;
+}
+
+.second-msg-a {
+    color: lightskyblue;
+    border-left: solid 3px lightskyblue;
+
+}
+
+.third-msg-a {
+    color: deepskyblue;
+    border-left: solid 3px deepskyblue;
+
+}
+
+.msg span {
+    float: right;
+    color: white;
+    font-size: 10px;
+}
+
+.today-commit-count {
+    min-width: 130px;
+    width: 130px;
+    font-size: 40px;
+    height: 130px;
+}
+
+.cmt-cnt {
+    font-weight: 800;
+    color: lightcyan;
+    line-height: 90px;
+}
+
+.goal-cnt {
+    font-weight: 300;
+    color: deepskyblue;
+}
+
+.recent-commit-msg {
+    min-width: 530px;
+    width: 60%;
+    font-weight: 200;
+    font-size: 12.5px;
 }

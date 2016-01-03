@@ -15,15 +15,13 @@
             'link': '/commits'
         }, {
             'title': 'Commit Lines',
-            'link': '/commit_lines'
+            'link': '/commitlines'
         }, {
             'title': 'Commit time',
-            'link': '/commit_time'
+            'link': '/committime'
         }];
 
         $scope.isLoggedIn = Auth.isLoggedIn;
-        $scope.isAdmin = Auth.isAdmin;
-        $scope.getCurrentUser = Auth.getCurrentUser;
 
         $scope.logout = function() {
             Auth.logout();
