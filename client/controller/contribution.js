@@ -13,7 +13,7 @@
             tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
             startDate = new Date(today.getFullYear(), today.getMonth() - PERIOD_MONTH, today.getDate());
 
-        var width = 600,
+        var width = 630,
             height = 150,
             cellSize = width / (PERIOD_MONTH * 4 + 1) - 2; // cell size
 
@@ -34,7 +34,7 @@
             .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
             .attr("fill", "white")
             .attr("class", "year")
-            .text(2015);
+            .text(2016);
 
         var rect = svg.selectAll(".day")
             .data(d3.time.days(startDate, tomorrow))
