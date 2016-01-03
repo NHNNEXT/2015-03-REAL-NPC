@@ -5,8 +5,6 @@
     'use strict';
 
     var app = angular.module('npcApp', ['ngCookies', 'ngRoute']);
-
-    //route등록하는 config
     app.config(function($routeProvider, $httpProvider) {
         $routeProvider
             .when('/', {
