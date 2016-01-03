@@ -15,16 +15,8 @@
                 currentUser = {};
             },
 
-            getCurrentUser: function() {
-                return currentUser;
-            },
-
             isLoggedIn: function() {
-                return ('role' in currentUser);
-            },
-
-            isAdmin: function() {
-                return currentUser.role === 'auth';
+                return ('token' in currentUser);
             },
 
             httpHeader: function(headers) {
@@ -34,10 +26,6 @@
                 }
                 return headers;
             },
-
-            getToken: function() {
-                return currentUser.token;
-            }
         };
     });
 })(angular);

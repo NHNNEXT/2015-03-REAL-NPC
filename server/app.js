@@ -73,7 +73,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
-// set interval
-setInterval(update, 6000);
+// Start update in 5 sec
+setTimeout(update, 4000);
 
 module.exports = app;

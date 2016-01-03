@@ -5,6 +5,9 @@ var Repo = require('./model/repo');
 var Commit = require('./model/commit');
 var Language = require('./model/languages');
 
+var defaultInterval = 60 * 1000;    // 60 sec
+var updateInterval = defaultInterval;
+
 function update() {
     /* GET commit page. */
     Repo.find(function(err, repos) {
@@ -18,6 +21,11 @@ function update() {
                 }
             }, function(err, response, body) {
                 if (err) { return console.log(new Error(err)); }
+                if (response.statusCode == 403) {
+                    updateInterval = defaultInterval * 10;
+                    return console.log(response.statusCode, body);
+                }
+
                 var commits = body ? JSON.parse(body) : [];
                 commits.forEach(function(data) {
                     fetchCommit(data.sha, repo.owner, repo.name);
@@ -34,6 +42,10 @@ function update() {
                 }
             }, function(err, response, body) {
                 if (err) { return console.log(new Error(err)); }
+                if (response.statusCode == 403) {
+                    updateInterval = defaultInterval * 10;
+                    return console.log(response.statusCode, body);
+                }
 
                 //upsert하여 넣는다. 똑같으면 안 넣고, 라인 수가 다르면 넣고 이전 것을 지워야 한다.
                 var langData = JSON.parse(body);
@@ -46,6 +58,9 @@ function update() {
             });
         });
     });
+
+    setTimeout(update, updateInterval);
+    updateInterval = defaultInterval;
 }
 
 function fetchCommit(sha, owner, name) {
@@ -60,19 +75,25 @@ function fetchCommit(sha, owner, name) {
                 }
             }, function(err, response, body) {
                 if (err) { return console.log(new Error(err)); }
+                if (response.statusCode == 403) {
+                    updateInterval = defaultInterval * 10;
+                    return console.log(response.statusCode, body);
+                }
+
                 var commit = JSON.parse(body);
-		if (commit.author) {
-                	var commitData = new Commit({
-                	    sha: sha,
-                	    owner: owner,
-                	    repoName: name,
-                	    date: commit.commit.author.date,
-                	    addition: commit.stats.additions,
-                	    deletion: commit.stats.deletions,
-                	    name: commit.author.login
-                	});
-                	commitData.save();
-		}
+                // TODO: Get commiter (or someone who push that commit) when commit.author is null
+                if (commit.author) {
+                    var commitData = new Commit({
+                        sha: sha,
+                        owner: owner,
+                        repoName: name,
+                        date: commit.commit.author.date,
+                        addition: commit.stats.additions,
+                        deletion: commit.stats.deletions,
+                        name: commit.author.login
+                    });
+                    commitData.save();
+                }
             });
         }
     });

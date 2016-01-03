@@ -8,7 +8,7 @@ var Schema = mongoose.Schema;
 var repoSchema = new Schema({
     name: String,
     owner: String,
-    group: Schema.ObjectId
+    groups: [Schema.ObjectId]
 });
 
 module.exports = mongoose.model('repo', repoSchema);

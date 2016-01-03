@@ -8,42 +8,42 @@
     var app = angular.module('npcApp');
     app.controller('ManageGroup', function ($scope, $http, Auth) {
         $scope.groups = [];
+        $scope.selectedGroup = '';
         $scope.repos = [];
-        $scope.searchResult = [];
+        $scope.searchResults = [];
 
         $http.get('/groups', {headers: Auth.httpHeader()}).success(function(groups) {
-            console.log(groups);
-            $scope.groups = groups.filter(function(group) { return group.name != ''; });
-            console.log($scope.groups);
+            $scope.groups = groups;
+            selectGroup($scope.groups[0]);
         });
 
-        var test_data = [
-            {owner: 'NHNNEXT', name: '2015-03-REAL-NPC'},
-            {owner: 'NHNNEXT', name: '2015-03-REAL-TUTU'},
-            {owner: 'NHNNEXT', name: '2015-03-REAL-BNB'}
-        ];
-
         function selectGroup(group) {
-            if (! group) {
-                $scope.repos = test_data;
-                return;
-            }
-            $http.get('/repos?group=' + group.name, {headers: Auth.httpHeader()}).success(function(repos) {
-                console.log(repos);
+            $scope.selectedGroup = group;
+            $scope.repos = [];
+            if (! group) { return; }
+
+            $http.get('/groups/' + group + '/repos', {headers: Auth.httpHeader()}).success(function(repos) {
                 $scope.repos = repos;
-            }).error(function(data, status) {
-                console.log(data, status);
             });
         }
 
-        function searchRepo() {
-            var keyword = $scope.keyword;
+        function addGroup(group) {
+            $http.post('/groups/' + group, '', {headers: Auth.httpHeader()}).success(function() {
+                $scope.groups.push(group);
+                selectGroup(group);
+            });
+        }
+
+        function removeGroup(group) {
+            // TODO
+        }
+
+        function searchRepositories(keyword) {
             if (! keyword) {
                 return console.log('Repository search: no keyword');
             }
             $http.get('https://api.github.com/search/repositories?q=' + keyword).success(function(data) {
-                console.log(data.items);
-                $scope.searchResult = data.items.map(function(repo) {
+                $scope.searchResults = data.items.map(function(repo) {
                     return {
                         owner: repo.owner.login,
                         name: repo.name,
@@ -54,8 +54,39 @@
             });
         }
 
-        selectGroup();
+        function addRepositories(group, searchResults) {
+            if (! group) { return; }
+            var selectedRepositories = searchResults.filter(function(repository) {
+                return repository.selected;
+            }).map(function(repository) {
+                return {
+                    owner: repository.owner,
+                    name: repository.name
+                };
+            });
+            $http.post(
+                '/groups/' + group + '/repos', selectedRepositories,
+                {headers: Auth.httpHeader()}
+            ).success(function() {
+                selectGroup(group);
+            })
+        }
 
-        $scope.search = searchRepo;
+        function removeRepository(group, repository) {
+            if (! group) { return; }
+            $http.delete(
+                '/groups/' + group + '/repos/' + repository._id,
+                {headers: Auth.httpHeader()}
+            ).success(function() {
+                selectGroup(group);
+            });
+        }
+
+        $scope.selectGroup = selectGroup;
+        $scope.addGroup = addGroup;
+        $scope.removeGroup = removeGroup;
+        $scope.searchRepositories = searchRepositories;
+        $scope.addRepositories = addRepositories;
+        $scope.removeRepository = removeRepository;
     });
 })(angular);

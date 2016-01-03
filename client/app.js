@@ -7,7 +7,7 @@
     var app = angular.module('npcApp', ['ngCookies', 'ngRoute']);
 
     //route등록하는 config
-    app.config(function($routeProvider, $locationProvider, $httpProvider) {
+    app.config(function($routeProvider, $httpProvider) {
         $routeProvider
             .when('/', {
                 controller: 'CheckLogin',
@@ -24,7 +24,6 @@
                 redirectTo: '/'
             });
 
-//        $locationProvider.html5Mode(true);
         $httpProvider.interceptors.push('authInterceptor');
     }).factory('authInterceptor', function($rootScope, $q, $cookies, $window) {
         return {

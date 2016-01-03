@@ -21,31 +21,66 @@ var validateJwt = expressJwt({ secret: config.secrets.session });
 router.get('/groups', validateJwt, function(req, res) {
     var user = req.user._id;
     Group.find({'user': user}, function(err, groups) {
-        if (err) {
-            return res.status(500).send(err);
-        }
+        if (err) { return res.status(500).send(err); }
 
-        res.status(200).send(groups);
+        res.status(200).send(
+            groups.map(function(group) { return group.name; })
+        );
     })
-})
+});
 
 /**
- * Get repositories
+ * Add new group
  * Parameters:
- *  group   String  get repository of given group name, without this parameter it will get all repository
+ *  group   String  group name
  */
-router.get('/repos', validateJwt, function(req, res) {
-    var group = req.query.group || '';
-    Group.find({'user': req.user._id, 'name': group}, function(err, groups) {
-        if (err || groups.length == 0) {
-            return res.status(500).send(err);
-        }
+router.post('/groups/:group', validateJwt, function(req, res) {
+    var user = req.user._id;
+    var group = req.params.group;
+    Group.find({'user': user, 'name': group}, function(err, groups) {
+        if (err) { return res.status(500).send(err); }
+        if (groups.length > 0) { return res.status(409).send('Group already exists'); }
 
-        Repo.find({'group': groups[0]._id}, function(err, repos) {
-            if (err) {
-                return res.status(500).send(err);
-            }
+        var newGroup = new Group({
+            'user': user,
+            'name': group
+        });
+        newGroup.save(function(err) {
+            if (err) { return res.status(500).send(err); }
+            res.sendStatus(201);
+        });
+    });
+});
 
+/**
+ * Delete group
+ * Parameters:
+ *  group   String  group name
+ */
+router.delete('/groups/:group', validateJwt, function(req, res) {
+    var user = req.user._id;
+    var group = req.params.group;
+    Group.remove({'user': user, 'name': group}, function(err, result) {
+        if (err) { return res.status(500).send(err); }
+        // if (! result.ok || ! result.n) { return res.status(404).send('Group not exists');
+        res.sendStatus(204);
+    });
+});
+
+/**
+ * Get repositories on group
+ * Parameters:
+ *  group   String  group name
+ */
+router.get('/groups/:group/repos', validateJwt, function(req, res) {
+    var user = req.user._id;
+    var group = req.params.group;
+    Group.find({'user': user, 'name': group}, function(err, groups) {
+        if (err) { return res.status(500).send(err); }
+        if (groups.length == 0) { return res.status(404).send('Group not exists'); }
+
+        Repo.find({'groups': groups[0]._id}, function(err, repos) {
+            if (err) { return res.status(500).send(err); }
             res.status(200).send(repos);
         });
     });
@@ -53,12 +88,74 @@ router.get('/repos', validateJwt, function(req, res) {
 
 /**
  * Add repositories on group
+ * Parameters:
+ *  group   String  group name
+ * Data:
+ *  owner   String  owner of repository
+ *  name    String  repository name
  */
-router.post('/repos/:group', validateJwt, function(req, res) {
+router.post('/groups/:group/repos', validateJwt, function(req, res) {
     var user = req.user._id;
-    var group = req.param.group;
-    var data = req.body;
-    console.log(user, group, data);
+    var group = req.params.group;
+    var repositories = req.body;
+
+    Group.find({user: user, name: group}, function(err, groups) {
+        if (err || groups.length == 0) {
+            return res.status(500).send(err);
+        }
+
+        var groupId = groups[0]._id;
+        repositories.forEach(function(repository) {
+            Repo.find(repository, function(err, results) {
+                if (err) { return console.log(new Error(err)); }
+
+                var data = (results.length == 0) ? new Repo(repository) : results[0];
+                if (data.groups.indexOf(groupId) == -1) {
+                    data.groups.push(groupId);
+                }
+                data.save(function(err) {
+                    if (err) { return console.log(new Error(err)); }
+                });
+            });
+        });
+
+        res.sendStatus(201);
+    });
+});
+
+/**
+ * Delete repositories from group
+ * Parameters:
+ *  group   String  group name
+ *  repoId  String  ObjectID of repository
+ */
+router.delete('/groups/:group/repos/:repoId', validateJwt, function(req, res) {
+    var user = req.user._id;
+    var group = req.params.group;
+    var repoId = req.params.repoId;
+
+    Group.findOne({user: user, name: group}, function(err, group) {
+        if (err) { return res.status(500).send(err); }
+        if (! group) { return res.status(404).send('Group not found'); }
+
+        Repo.findById(repoId, function(err, repo) {
+            if (err) { return res.status(500).send(err); }
+            if (! repo) { return res.status(404).send('Repository not found'); }
+
+            if (repo.groups.length == 1 && repo.groups[0].equals(group._id)) {
+                repo.remove(function(err) {
+                    if (err) { return res.status(500).send(err); }
+                    res.sendStatus(204);
+                });
+            } else {
+                repo.groups = repo.groups.filter(function(g) { return ! g.equals(group._id); });
+                repo.save(function(err) {
+                    if (err) { return res.status(500).send(err); }
+                    res.sendStatus(204);
+                });
+            }
+        });
+    });
 });
 
 /**
@@ -189,8 +286,8 @@ passport.use(new GithubStrategy({
  * Returns a jwt token signed by the app secret
  */
 function signToken(user) {
+    console.log({ _id: user.username, role: user.role });
     return {
-        role: user.role,
         token: jwt.sign({ _id: user.username, role: user.role }, config.secrets.session, { expiresIn: '12h' })
     };
 }

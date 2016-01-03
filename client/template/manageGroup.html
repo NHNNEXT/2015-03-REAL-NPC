@@ -10,17 +10,12 @@
         <div class="row">
             <div class="col-md-3">
                 <ul class="list-group">
-                    <li ng-repeat="group in groups" class="list-group-item">{{group.name}}</li>
-                    <li class="list-group-item">NEXT Institute <a href="">remove</a></li> <!-- 더미데이터 -->
-                    <li class="list-group-item">Game <a href="">remove</a></li> <!-- 더미데이터 -->
-                    <li class="list-group-item active">Web :: Server <a href="">remove</a></li> <!-- 더미데이터 -->
-                    <li class="list-group-item">Web :: Client <a href="">remove</a></li> <!-- 더미데이터 -->
-                    <li class="list-group-item">Mobile :: Android <a href="">remove</a></li> <!-- 더미데이터 -->
-                    <li class="list-group-item">Mobile :: iOS <a href="">remove</a></li> <!-- 더미데이터 -->
+                    <li ng-repeat="group in groups" ng-class="['list-group-item', {active: group == selectedGroup}]"
+                        ng-click="selectGroup(group)">{{group}} <a ng-click="removeGroup(group)">remove</a></li>
                     <form>
                         <span>Create Group : </span>
-                        <input class="ownerSearch" type="text" placeholder="Group Name">
-                        <button type="button">Add</button>
+                        <input ng-model="newGroup" class="ownerSearch" type="text" placeholder="Group Name">
+                        <button type="button" ng-click="addGroup(newGroup)">Add</button>
                     </form>
                 </ul>
             </div>
@@ -30,28 +25,30 @@
                         <tr>
                             <th>Owner</th>
                             <th>Name</th>
-                            <!--<th>Description</th>-->
                             <th></th>
                         </tr>
                         <tr ng-repeat="repo in repos">
                             <td>{{repo.owner}}</td>
                             <td>{{repo.name}}</td>
-                            <!--<td>{{repo.description}}</td>-->
-                            <td><a href="">remove</a></td>
+                            <td><a ng-click="removeRepository(selectedGroup, repo)">remove</a></td>
                         </tr>
                     </table>
                     <form>
                         <div class="form-group">
                             <label>Add repository to group: </label>
-                            <input ng-model="keyword" class="ownerSearch" type="text" placeholder="user or organization">
-                            <button type="button" ng-click="search()">Search</button>
+                            <form name="search" ng-submit="searchRepositories(keyword)">
+                                <input ng-model="keyword" class="ownerSearch" type="text" placeholder="user or organization">
+                                <button type="submit" ng-click="searchRepositories(keyword)">Search</button>
+                            </form>
                         </div>
                         <div>
-                            <div ng-repeat="repo in searchResult" class="checkbox">
-                                <input type="checkbox"><a ng-href="repo.url">{{repo.owner}}/{{repo.name}}</a>
+                            <div ng-repeat="repo in searchResults" class="checkbox">
+                                <input ng-model="repo.selected" type="checkbox">
+                                <a ng-href="repo.url">{{repo.owner}}/{{repo.name}}</a>
                                 {{repo.description}}
                             </div>
-                            <button ng-show="searchResult.length > 0" type="button">Add</button>
+                            <button ng-show="searchResults.length > 0"
+                                    ng-click="addRepositories(selectedGroup, searchResults)" type="button">Add</button>
                         </div>
                     </form>
                 </section>
