@@ -1,7 +1,8 @@
 <div class = "dash-tile commit">
     <div class="dash-tile-title">Commits</div>
     <div class="option range">
-        <span ng-repeat="range in rangeOptions" ng-click="setRange(range)" ng-class="{selected:isRangeSelected(range)}">{{ range.title }}</span>
+        <span ng-repeat="range in rangeOptions" ng-click="setRange(range)"
+              ng-class="{selected:isRangeSelected(range)}">{{ range.title }}</span>
     </div>
     <canvas id="commit" class = "commit-graph"></canvas>
 </div>

@@ -22,13 +22,13 @@
             $scope.repos = [];
             if (! group) { return; }
 
-            $http.get('/groups/' + group + '/repos', {headers: Auth.httpHeader()}).success(function(repos) {
+            $http.get('/groups/' + group._id + '/repos', {headers: Auth.httpHeader()}).success(function(repos) {
                 $scope.repos = repos;
             });
         }
 
-        function addGroup(group) {
-            $http.post('/groups/' + group, '', {headers: Auth.httpHeader()}).success(function() {
+        function addGroup(groupName) {
+            $http.post('/groups/' + groupName, '', {headers: Auth.httpHeader()}).success(function(group) {
                 $scope.groups.push(group);
                 selectGroup(group);
             });
@@ -65,7 +65,7 @@
                 };
             });
             $http.post(
-                '/groups/' + group + '/repos', selectedRepositories,
+                '/groups/' + group._id + '/repos', selectedRepositories,
                 {headers: Auth.httpHeader()}
             ).success(function() {
                 selectGroup(group);
@@ -75,7 +75,7 @@
         function removeRepository(group, repository) {
             if (! group) { return; }
             $http.delete(
-                '/groups/' + group + '/repos/' + repository._id,
+                '/groups/' + group._id + '/repos/' + repository._id,
                 {headers: Auth.httpHeader()}
             ).success(function() {
                 selectGroup(group);

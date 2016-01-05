@@ -10,7 +10,7 @@
         return {
             restrict: 'E',
             templateUrl: 'template/recentCommitMsg.html',
-            controller: 'Controller',
+            controller: 'recentCommitMsgController',
             scope: {}
         };
     });

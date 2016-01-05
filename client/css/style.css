@@ -119,12 +119,18 @@ a {
 }
 
 .year {
+    font-size: 10px;
+    text-anchor: middle;
+}
+
+.month {
+    font-size: 10px;
     text-anchor: middle;
 }
 
 .day {
     stroke: gray;
-    stroke-width: 0.4px;
+    stroke-width: 0.5px;
 }
 
 .ct-series-e .ct-bar,.ct-series-e .ct-line,.ct-series-e .ct-point,.ct-series-e .ct-slice-donut {
@@ -267,13 +273,13 @@ section {
 
 }
 
-.nav-wrap .group a:hover{
+.nav-wrap .group a:hover {
     background-color: deepskyblue;
     color: white;
     border-left: solid 3px white;
 }
 
-.nav-wrap .group .selected{
+.nav-wrap .group .selected {
     background-color: deepskyblue;
     color: white;
     border-left: solid 3px white;
@@ -305,7 +311,7 @@ section {
     position: relative;
     width: 90%;
     padding: 50px;
-    height: 1000px;
+    /*height: 1000px;*/
 }
 
 .commit-graph {
@@ -329,7 +335,7 @@ section {
     margin-left: 50px;
 }
 
-.RdYlGn, .languageGraph {
+.RdYlGn {
     margin-left: 50px;
 }
 
@@ -477,6 +483,11 @@ header .selected {
     float: right;
     color: white;
     font-size: 10px;
+}
+
+.x-axis .tick text {
+    font-size: 10px;
+    fill: white;
 }
 
 .today-commit-count {

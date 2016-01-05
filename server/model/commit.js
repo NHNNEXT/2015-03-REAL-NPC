@@ -13,8 +13,7 @@ var commitSchema = new Schema({
     message: String,
     url: String,
     commentCount: Number,
-    repoName: String,
-    owner: String,
+    repository: Schema.ObjectId,
     addition: Number,
     deletion: Number
 });

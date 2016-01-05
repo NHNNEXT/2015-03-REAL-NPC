@@ -6,8 +6,17 @@
     'use strict';
 
     var app = angular.module('npcApp');
-    app.controller('langController', function ($scope, $http) {
+    app.controller('langController', function ($scope, $http, Util) {
         var results=[[], [], [], [], [], [], []];
+        var langCategory = [
+            'C/C++',
+            'Java',
+            'JavaScript',
+            'Objective-C',
+            'Python',
+            'HTML/CSS',
+            'other'
+        ];
         var langIndexMap = {
             'C': 0,
             'C++': 0,
@@ -21,35 +30,37 @@
         };
 
         $http.get('/lang').success(function (data) {
-            data.forEach(function (teamData, teamIndex) {
-                var langCount = [0, 0, 0, 0, 0, 0, 0];
-                for (var language in teamData.languages) {
-                    var langIndex;
+            var projectName = [];
+            data.forEach(function (projectData, index) {
+                projectName[index] = projectData.owner + '/' + projectData.name;
 
-                    if (language in langIndexMap) {
-                        langIndex = langIndexMap[language];
-                    } else {
-                        langIndex = langIndexMap['other'];
-                    }
+                var langCount = Array.apply(null, Array(langCategory.length))
+                    .map(function () { return 0; });
 
-                    langCount[langIndex] += teamData.languages[language];
+                for (var language in projectData.languages) {
+                    var langIndex = (language in langIndexMap) ?
+                        langIndexMap[language] : langIndexMap['other'];
+                    langCount[langIndex] += projectData.languages[language];
                 }
 
                 langCount.forEach(function (count, langIndex) {
-                    var langObj = {'x': teamIndex, 'y': count};
+                    var langObj = {'x': index, 'y': count};
                     results[langIndex].push(langObj);
                 });
             });
 
-            var n = 7, // number of layers
-                m = 4, // number of samples per layer
+            console.log("project: ", data);
+            console.log(results);
+
+            var n = 8, // number of layers
+                m = results.length, // number of samples per layer
                 stack = d3.layout.stack(),
                 layers = stack(results),
                 yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
                 yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
 
             var margin = {top: 40, right: 10, bottom: 20, left: 10},
-                width = 300 - margin.left - margin.right,
+                width = 700 - margin.left - margin.right,
                 height = 200 - margin.top - margin.bottom;
 
             var x = d3.scale.ordinal()
@@ -62,12 +73,15 @@
 
             var color = d3.scale.linear()
                 .domain([0, n - 1])
-                .range(["#aad", "#556"]);
+                .range(["#E0FFFF", "#3BB9FF"]);
 
             var xAxis = d3.svg.axis()
                 .scale(x)
                 .tickSize(0)
                 .tickPadding(6)
+                .tickFormat(function(d) {
+                    return Util.simpleName(projectName[d]);
+                })
                 .orient("bottom");
 
             var svg = d3.select("#commit-language").append("svg")
@@ -96,7 +110,7 @@
                 .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
 
             svg.append("g")
-                .attr("class", "x axis")
+                .attr("class", "x-axis")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
 

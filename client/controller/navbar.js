@@ -1,25 +1,30 @@
 /**
- * Created by jwlee on 2015. 11. 16..
+ * Created by jwlee on 1/3/16.
  */
 
 (function(angular) {
     'use strict';
 
     var app = angular.module('npcApp');
-    app.controller('NavbarCtrl', function ($scope, $location, Auth) {
+    app.controller('NavbarCtrl', function ($scope, $routeParams, $location, Auth) {
+        var groupId = $routeParams.groupId;
+        var path = groupId ? '/' + groupId : '';
+
         $scope.menu = [{
             'title': 'Dashboard',
-            'link': '/'
+            'link': '/main' + path
         }, {
-            'title': 'Setting',
-            'link': '/manage'
+            'title': 'Commits',
+            'link': '/commits' + path
+        }, {
+            'title': 'Commit Lines',
+            'link': '/commitlines' + path
+        }, {
+            'title': 'Commit time',
+            'link': '/committime' + path
         }];
 
-        $scope.isCollapsed = true;
         $scope.isLoggedIn = Auth.isLoggedIn;
-        $scope.isAdmin = Auth.isAdmin;
-        $scope.getCurrentUser = Auth.getCurrentUser;
-
         $scope.logout = function() {
             Auth.logout();
             $location.path('/');

@@ -25,7 +25,7 @@
                     headers.Authorization = 'Bearer ' + $cookies.getObject('token').token;
                 }
                 return headers;
-            },
+            }
         };
     });
 })(angular);

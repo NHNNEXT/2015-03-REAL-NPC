@@ -5,15 +5,6 @@
 (function(angular) {
     'use strict';
 
-    function getLocalDateString(date) {
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var day = date.getDate();
-        return year +
-            ((month < 10) ? '-0' : '-') + month +
-            ((day < 10) ? '-0' : '-') + day;
-    }
-
     var rangeOptions = [
         { title: "1 week", days: 7 },
         { title: "1 month", months: 1 },
@@ -27,31 +18,10 @@
             return $filter('number')(number * 100, fractionSize || 0) + '%';
         };
     });
-    app.controller('ppmmCommitController', function($scope, $http) {
+    app.controller('ppmmCommitController', function($routeParams, $scope, $http, Util) {
         var controller = this;
+        var groupId = $routeParams.groupId;
         var today = new Date();
-
-        function teamName(commit) {
-            return (commit.owner + '-' + commit.repoName)
-                .split('-').slice(-2).join('-');
-        }
-
-        function recoverName(commit) {
-            var recoverMap = {
-                "zerohouse": "2-3",
-                "yskoh": "2-4",
-                "ellen24h": "2-4",
-                "jinuskr": "4-10",
-                "hataeho1": "2-4",
-                "HwangJJung": "2-4",
-                "dragonist": "2-4",
-                "030ii": "2-4",
-                "hyes": "2-3",
-                "milooy": "2-4",
-                "hyeyeounj": "2-3"
-            };
-            return recoverMap[commit.name] || 'else';
-        }
 
         function makeChart() {
             var range = controller.range;
@@ -60,37 +30,32 @@
                 today.getMonth() - (range.months || 0),
                 today.getDate() - (range.days || 0)
             );
-            var since = 'since=' + getLocalDateString(startDate);
+            var since = 'since=' + Util.getLocalDateString(startDate);
 
-            var groupMapper = teamName;
-            var groupNames;
-            switch (controller.mode) {
-                case 'recover':
-                    groupMapper = recoverName;
-                    groupNames = ['2-3', '2-4', '3-7', '3-8', '3-9', '4-10'];
-                    break;
-            }
-
-            $http.get('/commits?' + since).success(function(data) {
+            $http.get('/groups/' + groupId + '/commits?' + since).success(function(data) {
+                var repositories = data.repositories;
+                var commits = data.commits;
                 var totalLine = 0;
                 var groups = {};
 
-                data.forEach(function(commit) {
-                    var name = groupMapper(commit);
-                    groups[name] = groups[name] || {'lines': 0, 'commits': 0};
-                    groups[name].lines += commit.addition;
-                    groups[name].commits++;
+                commits.forEach(function(commit) {
+                    var repoId = commit.repository;
+                    groups[repoId] = groups[repoId] || {'lines': 0, 'commits': 0};
+                    groups[repoId].lines += commit.addition;
+                    groups[repoId].commits++;
                 });
 
-                var keys = groupNames || Object.keys(groups);
+                function teamName(repoId) {
+                    return Util.simpleName(repositories[repoId]);
+                }
+
+                var keys = Object.keys(groups);
                 var chartData =
-                    keys.filter(function(name) {    // remove 'else' group
-                        return name != 'else';
-                    }).map(function(name) {         // set lines and commit
-                        var group = groups[name] || {'lines': 0, 'commits': 0};
+                    keys.map(function(repoId) {         // set lines and commit
+                        var group = groups[repoId] || {'lines': 0, 'commits': 0};
                         totalLine += group.lines;
                         return {
-                            'name': name,
+                            'name': teamName(repoId),
                             'lines': group.lines,
                             'commits': group.commits
                         };
@@ -133,16 +98,7 @@
             return (controller.range == range);
         };
 
-        $scope.setMode = function(mode) {
-            controller.mode = mode;
-            makeChart();
-        };
-        $scope.isModeSelected = function(mode) {
-            return (controller.mode == mode);
-        };
-
         controller.range = rangeOptions[0];
-        controller.mode = 'team';
-        makeChart();
+        if (groupId) { makeChart(); }
     });
 })(angular);

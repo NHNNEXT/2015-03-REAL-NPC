@@ -5,15 +5,6 @@
 (function(angular) {
     'use strict';
 
-    function getLocalDateString(date) {
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var day = date.getDate();
-        return year +
-            ((month < 10) ? '-0' : '-') + month +
-            ((day < 10) ? '-0' : '-') + day;
-    }
-
     var rangeOptions = [
         { title: "1 week", days: 7 },
         { title: "1 month", months: 1 },
@@ -22,8 +13,9 @@
     ];
 
     var app = angular.module('npcApp');
-    app.controller('commitTimeController', function($scope, $http) {
+    app.controller('commitTimeController', function($routeParams, $scope, $http, Util) {
         var controller = this;
+        var groupId = $routeParams.groupId;
         var today = new Date();
 
         function makeChart() {
@@ -33,7 +25,7 @@
                 today.getMonth() - (range.months || 0),
                 today.getDate() - (range.days || 0)
             );
-            var since = 'since=' + getLocalDateString(startDate);
+            var since = 'since=' + Util.getLocalDateString(startDate);
 
             var chartData = [
                 {
@@ -69,8 +61,9 @@
             ];
             chartData.forEach(function(data) { data.value = 0; });
 
-            $http.get('/commits?' + since).success(function(data) {
-                data.forEach(function(commit) {
+            $http.get('/groups/' + groupId + '/commits?' + since).success(function(data) {
+                var commits = data.commits;
+                commits.forEach(function(commit) {
                     var dateTime = new Date(commit.date);
                     var time = dateTime.getHours();
 
@@ -133,6 +126,6 @@
         };
 
         controller.range = rangeOptions[0];
-        makeChart();
+        if (groupId) { makeChart(); }
     });
 })(angular);

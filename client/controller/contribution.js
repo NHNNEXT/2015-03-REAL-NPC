@@ -6,7 +6,8 @@
     'use strict';
 
     var app = angular.module('npcApp');
-    app.controller('contributionController', function($scope, $http) {
+    app.controller('contributionController', function($routeParams, $scope, $http, Util) {
+        var groupId = $routeParams.groupId;
         var PERIOD_MONTH = 12;
 
         var today = new Date(),
@@ -30,11 +31,18 @@
             .append("g")
             .attr("transform", "translate(15, 40)");
 
-        svg.append("text")
-            .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
+        var month = svg.selectAll(".month")
+            .data(d3.time.months(startDate, today))
+            .enter().append("text")
+            .attr("transform", function(d) {
+                var month = Math.floor(Util.dateDiffInDays(d3.time.month(startDate), d3.time.month(d)) / 7);
+                return "translate(" + (month * 11 - 3) + "," + -1 + ")";
+            })
             .attr("fill", "white")
-            .attr("class", "year")
-            .text(2016);
+            .attr("class", "month")
+            .text(function(d) {
+                return d3.time.format('%b')(d);
+            });
 
         var rect = svg.selectAll(".day")
             .data(d3.time.days(startDate, tomorrow))
@@ -42,14 +50,19 @@
             .attr("class", "day")
             .attr("width", cellSize)
             .attr("height", cellSize)
-            .attr("x", function(d) { return (d3.time.weekOfYear(d) - d3.time.weekOfYear(startDate)) * cellSize; })
+            .attr("x", function(d) {
+                var week = Math.floor(Util.dateDiffInDays(d3.time.week(startDate), d3.time.week(d)) / 7);
+                console.log('week: ', week);
+                week = (week >= 0) ? week : week + 52;
+                return week * cellSize;
+            })
             .attr("y", function(d) { return d.getDay() * cellSize; })
             .datum(format);
 
         rect.append("title")
             .text(function(d) { return d; });
 
-        $http.get('/contributions').success(function(data) {
+        $http.get('/groups/' + groupId + '/contributions').success(function(data) {
             rect.filter(function(d) { return d in data; })
                 .attr("class", function(d) { return "day " + color(data[d]); })
                 .select("title")

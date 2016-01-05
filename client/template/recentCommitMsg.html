@@ -1,13 +1,16 @@
 <div class = "dash-tile recent-commit-msg">
     <div class="dash-tile-title">Recent Commit Message</div>
-    <div class="first-msg msg">
-        <a href="#" class="msg-a first-msg-a"> Ellen Seon :: Front-end User Interface Changed - Dashboard Finished <span> 3 mins ago</span> </a>
-    </div> <!-- 더미데이터 -->
-    <div class="second-msg msg">
-        <a href="#" class="msg-a second-msg-a"> Jinwoo Lee :: Manage group page: DB schema, some server logic, client prototype <span> 21 mins ago</span> </a>
-    </div> <!-- 더미데이터 -->
-    <div class="third-msg msg">
-        <a href="#" class="msg-a third-msg-a"> Ellen Seon :: Changed commit.js chart and call data from API to server <span> 37 mins ago</span> </a>
-    </div> <!-- 더미데이터 -->
+    <div ng-repeat="commit in commits" ng-class="['msg', commit.className]">
+        <a ng-href="{{commit.url}}" ng-class="['msg-a', commit.className2]"> {{commit.author}} :: {{commit.message}} <span> {{commit.time}} </span> </a>
+    </div>
+    <!--<div class="first-msg msg">-->
+        <!--<a href="#" class="msg-a first-msg-a"> Ellen Seon :: Front-end User Interface Changed - Dashboard Finished <span> 3 mins ago</span> </a>-->
+    <!--</div> &lt;!&ndash; 더미데이터 &ndash;&gt;-->
+    <!--<div class="second-msg msg">-->
+        <!--<a href="#" class="msg-a second-msg-a"> Jinwoo Lee :: Manage group page: DB schema, some server logic, client prototype <span> 21 mins ago</span> </a>-->
+    <!--</div> &lt;!&ndash; 더미데이터 &ndash;&gt;-->
+    <!--<div class="third-msg msg">-->
+        <!--<a href="#" class="msg-a third-msg-a"> Ellen Seon :: Changed commit.js chart and call data from API to server <span> 37 mins ago</span> </a>-->
+    <!--</div> &lt;!&ndash; 더미데이터 &ndash;&gt;-->
 </div>
 

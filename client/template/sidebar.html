@@ -1,0 +1,8 @@
+<div ng-controller="SidebarCtrl" class=nav-wrap>
+    <div class="group-h">
+        GROUPS
+    </div>
+    <div ng-repeat="group in groups" class="group">
+        <a ng-href="#{{group.link}}" ng-class="{selected: isActive(group)}">{{group.name}}</a>
+    </div>
+</div>

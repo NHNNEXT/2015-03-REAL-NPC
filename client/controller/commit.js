@@ -6,7 +6,6 @@
     'use strict';
 
     var today = new Date();
-    var _MS_PER_DAY = 1000 * 60 * 60 * 24;
 
     var rangeOptions = [
         { title: "1 week", days: 7 },
@@ -14,93 +13,94 @@
         { title: "3 months", months: 3 },
         { title: "6 months", months: 6 }
     ];
-    // a and b are javascript Date objects
-    function dateDiffInDays(a, b) {
-        // Discard the time and time-zone information.
-        var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-        var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-
-        return Math.floor((utc2 - utc1) / _MS_PER_DAY);
-    }
-
-    function getLocalDateString(date, simple) {
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var day = date.getDate();
-
-        var simpleForm = month + ((day < 10) ? '-0' : '-') + day;
-        return simple ?
-            simpleForm : year + ((month < 10) ? '-0' : '-') + simpleForm;
-    }
 
     var lineColor = ["rgba(220,220,220,1)", "rgba(151,187,205,1)", "rgba(151,187,205,1)"];
     var fillColor = ["rgba(220,220,220,0.2)", "rgba(151,187,205,0.2)", "rgba(151,187,205,0.2)"];
 
     var app = angular.module('npcApp');
-    app.controller('commitController', function($scope, $http) {
+    app.controller('commitController', function($routeParams, $scope, $http, Util) {
         var controller = this;
-        var range = 10; // 일단 기간, view에서 어떤 게 눌렸느냐에 따라 유동적으로 변경되어야 한다
+        var groupId = $routeParams.groupId;
         var ctx = document.getElementById('commit').getContext('2d');
 
-        var startDate = new Date(
-            today.getFullYear(),
-            today.getMonth(),
-            today.getDate() - range
-        );
-        var since = 'since=' + getLocalDateString(startDate);
-        $http.get('/commits?' + since).success(function(data) {
-            var commitData = {};
-            /* commitData Structure
-             commitData = { repoName: repoData, ... }
-             repoData = [ commitData, ... ] (index: dateDiff)
-             */
+        function makeChart() {
+            var range = controller.range.days || controller.range.months * 30;
+            var mode = 'day';
+            var startDate = new Date(
+                today.getFullYear(),
+                today.getMonth(),
+                today.getDate() - range
+            );
+            var since = 'since=' + Util.getLocalDateString(startDate);
 
-            data.forEach(function(commit) {
-                var repoName = commit.owner + commit.repoName;
-                var date = new Date(commit.date);
+            $http.get('/groups/' + groupId + '/commits?' + since + '&mode=' + mode).success(function (data) {
+                var repositories = data.repositories;
+                var commits = data.commits;
+                var commitData = {};
+                /* commitData Structure
+                 commitData = { repoName: repoData, ... }
+                 repoData = [ commitData, ... ] (index: dateDiff)
+                 */
 
-                if (! (repoName in commitData)) {
-                    // Make new array with default value 0
-                    commitData[repoName] =
-                        Array.apply(null, Array(range)).map(function() { return 0; });
-                }
+                commits.forEach(function (commit) {
+                    var repoId = commit.repository;
+                    var date = new Date(commit.date);
 
-                var dateDiff = dateDiffInDays(date, today);
-                if (dateDiff < range) {
-                    commitData[repoName][dateDiff]++;
-                }
+                    if (!(repoId in commitData)) {
+                        // Make new array with default value 0
+                        commitData[repoId] =
+                            Array.apply(null, Array(range)).map(function () {
+                                return 0;
+                            });
+                    }
+
+                    var dateDiff = Util.dateDiffInDays(date, today);
+                    if (dateDiff < range) {
+                        commitData[repoId][dateDiff]++;
+                    }
+                });
+
+                var chartData = {
+                    labels: Array.apply(null, Array(range))
+                        .map(function (_, index) {
+                            var date = new Date(
+                                today.getFullYear(),
+                                today.getMonth(),
+                                today.getDate() - range + index
+                            );
+                            return Util.getLocalDateString(date, true);
+                        }),
+                    datasets: Object.keys(commitData).map(function (repoId, index) {
+                        return {
+                            label: repositories[repoId],
+                            fillColor: fillColor[index] || fillColor[0],
+                            strokeColor: lineColor[index] || lineColor[0],
+                            pointColor: lineColor[index] || lineColor[0],
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: lineColor[index] || lineColor[index],
+                            data: commitData[repoId]
+                        };
+                    })
+                };
+
+                if (controller.chart) controller.chart.destroy();
+                controller.chart = new Chart(ctx).Line(chartData);
+
+                $scope.rangeOptions = rangeOptions;
             });
+        }
 
-            var chartData = {
-                labels : Array.apply(null, Array(range))
-                    .map(function(_, index) {
-                        var date = new Date(
-                            today.getFullYear(),
-                            today.getMonth(),
-                            today.getDate() - range + index
-                        );
-                        return getLocalDateString(date, true);
-                    }),
-                datasets : Object.keys(commitData).map(function(repoName, index) {
-                    return {
-                        label: repoName,
-                        fillColor: fillColor[index] || fillColor[0],
-                        strokeColor: lineColor[index] || lineColor[0],
-                        pointColor: lineColor[index] || lineColor[0],
-                        pointStrokeColor: "#fff",
-                        pointHighlightFill: "#fff",
-                        pointHighlightStroke: lineColor[index] || lineColor[index],
-                        data: commitData[repoName]
-                    };
-                })
-            };
+        $scope.rangeOptions = rangeOptions;
+        $scope.setRange = function(range) {
+            controller.range = range;
+            makeChart();
+        };
+        $scope.isRangeSelected = function(range) {
+            return (controller.range == range);
+        };
 
-            if (controller.chart) controller.chart.destroy();
-            controller.chart = new Chart(ctx).Line(chartData);
-
-            $scope.rangeOptions = rangeOptions;
-
-
-        });
+        controller.range = rangeOptions[0];
+        if (groupId) { makeChart(); }
     });
 })(angular);

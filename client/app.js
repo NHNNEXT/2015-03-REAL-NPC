@@ -10,7 +10,8 @@
             .when('/', {
                 controller: 'CheckLogin',
                 templateUrl: '/template/check.html'
-            }).when('/main', {
+            }).when('/main/:groupId?', {
+                controller: 'MainController',
                 templateUrl: '/template/main.html'
             }).when('/login', {
                 templateUrl: '/template/login.html'
@@ -18,12 +19,12 @@
                 templateUrl: '/template/manageGroup.html',
                 controller: 'ManageGroup',
                 scope: {}
-            }).when('/commits', {
+            }).when('/commits/:groupId?', {
                 templateUrl: '/template/hCommits.html'
-            }).when('/commitlines', {
+            }).when('/commitlines/:groupId?', {
                 templateUrl: '/template/hCommitLines.html'
 
-            }).when('/committime', {
+            }).when('/committime/:groupId?', {
                 templateUrl: '/template/hCommitTime.html'
             }).otherwise({
                 redirectTo: '/'
