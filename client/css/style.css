@@ -5,8 +5,35 @@ a {
     color: black;
 }
 
-button {
-    color: black;
+section.login {
+    padding: 20px;
+}
+
+.banner .title {
+    display: inline-block;
+    width: 40%;
+}
+
+.banner .login {
+    display: inline-block;
+    width: 30%;
+    vertical-align: text-bottom;
+}
+
+.banner h1 {
+    font-size: 36px;
+    margin: 10px 0;
+}
+
+.banner h2 {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+.banner button {
+    font-size: 20px;
+    width: 200px;
+    height: 60px;
 }
 
 table.table {

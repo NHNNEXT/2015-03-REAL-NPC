@@ -15,6 +15,10 @@
                 group.link = '/' + (path[0] || path[1]) + '/' + group._id;
             });
 
+            if (groups.length == 0) {
+                $location.url('/manage');
+            }
+
             if (groups.length > 0 && ! groupId) {
                 $location.url(groups[0].link);
             }

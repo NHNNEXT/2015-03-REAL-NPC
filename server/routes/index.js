@@ -379,11 +379,6 @@ passport.use(new GithubStrategy({
                 'role': 'user'
             });
             user.save(function(err) {
-                if (err) return done(err);
-
-                var group = new Group({'user': user.username, 'name': ''});
-                group.save();
-
                 done(err, user);
             });
         } else {
@@ -402,21 +397,21 @@ function signToken(user) {
     };
 }
 
-/**
- * Verify given token with app secret
- */
-function verifyToken(req, res, next) {
-    if (!req.headers || !req.headers.authorization) { return next(); }
-
-    var parts = req.headers.authorization.split(' ');
-    if (parts.length != 2 || parts[0] != 'Bearer') return next();
-
-    jwt.verify(parts[1], config.secrets.session, function (err, decoded) {
-        if (err) return next(err);
-        req['user'] = decoded;
-        next();
-    });
-}
+///**
+// * Verify given token with app secret
+// */
+//function verifyToken(req, res, next) {
+//    if (!req.headers || !req.headers.authorization) { return next(); }
+//
+//    var parts = req.headers.authorization.split(' ');
+//    if (parts.length != 2 || parts[0] != 'Bearer') return next();
+//
+//    jwt.verify(parts[1], config.secrets.session, function (err, decoded) {
+//        if (err) return next(err);
+//        req['user'] = decoded;
+//        next();
+//    });
+//}
 
 /**
  * Get repository list of given user
